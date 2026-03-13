@@ -33,8 +33,8 @@ export default function Landing() {
           </h2>
           
           <p style={{ fontSize: '20px', color: 'var(--text-secondary)', marginBottom: '48px', lineHeight: 1.6, maxWidth: '600px', margin: '0 auto 48px auto' }}>
-            Averra turns fragmented GPU supply into one reliable API for open-source model inference. <br/>
-            <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Lower cost. Fast failover. OpenAI-compatible.</span>
+            Averra brings state-aware orchestration to fragmented GPU supply, turning it into one reliable API for open-source model inference. <br/>
+            <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Lower cost. Tiered Reliability. OpenAI-compatible.</span>
           </p>
 
           {/* Value Prop Columns - 2x2 Grid */}
@@ -44,10 +44,10 @@ export default function Landing() {
             <div className="glass-panel" style={{ padding: '32px', position: 'relative' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                 <Terminal size={20} color="var(--brand-cyan)" />
-                <h3 style={{ fontSize: '18px', margin: 0 }}>OpenAI-Compatible API</h3>
+                <h3 style={{ fontSize: '18px', margin: 0 }}>State-Aware Orchestration</h3>
               </div>
               <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px' }}>
-                Low-latency, fast-failover inference routed across a fault-tolerant global GPU mesh. Drop-in replacement.
+                Low-latency inference routed across a fault-tolerant global GPU mesh. Background model warm-swapping eliminates cold starts.
               </p>
               
               <div className="mono" style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '16px', borderRadius: '8px', fontSize: '13px', color: '#a0a0a0', border: '1px solid var(--border-subtle)' }}>
@@ -64,10 +64,10 @@ export default function Landing() {
             <div className="glass-panel" style={{ padding: '32px', borderColor: 'rgba(180, 0, 255, 0.2)', display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                 <Zap size={20} color="var(--brand-purple)" />
-                <h3 style={{ fontSize: '18px', margin: 0 }}>Node Operator: Datacenter & Workstations</h3>
+                <h3 style={{ fontSize: '18px', margin: 0 }}>Tiered Reliability Routing</h3>
               </div>
               <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px', flex: 1 }}>
-                Monetize underused Linux GPU instances. We profile, route, and monitor your capacity for stable inference supply.
+                Choose "Best Effort" for cost-savings or "Consensus Routing" with 3x redundancy for enterprise SLAs. OpenAI-compatible drop-in replacement.
               </p>
               
               <div className="mono" style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '16px', borderRadius: '8px', fontSize: '13px', color: '#e0e0e0', border: '1px solid rgba(180, 0, 255, 0.2)' }}>
@@ -80,10 +80,10 @@ export default function Landing() {
             <div className="glass-panel" style={{ padding: '32px', borderColor: 'rgba(180, 0, 255, 0.2)', display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                 <Zap size={20} color="var(--brand-purple)" />
-                <h3 style={{ fontSize: '18px', margin: 0 }}>Node Operator: Apple Silicon</h3>
+                <h3 style={{ fontSize: '18px', margin: 0 }}>Node Operator: macOS & Linux</h3>
               </div>
               <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px', flex: 1 }}>
-                Provide unified memory inference capacity to the mesh. Background settlement requires zero configuration.
+                Provide unified memory inference capacity to the mesh for SLMs/MLMs. Automated payouts and background settlement require zero configuration.
               </p>
               
               <button className="cta-button" style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--brand-purple)', color: 'var(--text-primary)', padding: '14px 16px', fontSize: '14px', justifyContent: 'center' }}>
@@ -95,10 +95,10 @@ export default function Landing() {
             <div className="glass-panel" style={{ padding: '32px', borderColor: 'rgba(180, 0, 255, 0.2)', display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                 <Zap size={20} color="var(--brand-purple)" />
-                <h3 style={{ fontSize: '18px', margin: 0 }}>Node Operator: Windows PC & Gaming Rigs</h3>
+                <h3 style={{ fontSize: '18px', margin: 0 }}>Node Operator: Windows PC</h3>
               </div>
               <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px', flex: 1 }}>
-                Connect your NVIDIA GPU. Our scheduler continuously scores node reliability, uptime, and execution quality.
+                Connect your NVIDIA GPU with sufficient VRAM headroom. Our scheduler continuously scores node reliability, uptime, and execution quality.
               </p>
               
               <button className="cta-button" style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--brand-purple)', color: 'var(--text-primary)', padding: '14px 16px', fontSize: '14px', justifyContent: 'center' }}>

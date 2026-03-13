@@ -86,7 +86,7 @@ function NetworkExplorer() {
         
         <div className="kpi-card">
           <div className="kpi-title" style={{display: 'flex', gap:'8px', alignItems:'center'}}>
-            <Zap size={16} /> Nodes in Superposition
+            <Zap size={16} /> Warm-Swap Ready
           </div>
           <div className="kpi-value purple">{stats?.nodes_superposition || 0}</div>
         </div>
@@ -115,7 +115,7 @@ function NetworkExplorer() {
         <div className="glass-panel">
           <div className="header-title" style={{marginBottom: '16px', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px'}}>
             <CreditCard size={20} color="var(--text-primary)" />
-            <h2 style={{fontSize: '16px', color: 'var(--text-primary)'}}>Consumer Fiat (Compute Credits)</h2>
+            <h2 style={{fontSize: '16px', color: 'var(--text-primary)'}}>Enterprise Fiat (Compute Credits)</h2>
           </div>
           <div className="table-container">
             <table>
@@ -143,7 +143,7 @@ function NetworkExplorer() {
                  <Coins size={20} color="var(--brand-gold)" />
                  <h2 style={{fontSize: '16px', color: 'var(--text-primary)'}}>Provider Node Incomes ($AVR)</h2>
              </div>
-             <div title="Protected by Slashing Engine">
+             <div title="Protected by Automated Quality Control">
                 <ShieldAlert size={16} color="var(--text-secondary)" />
              </div>
           </div>
@@ -152,8 +152,8 @@ function NetworkExplorer() {
               <thead>
                 <tr>
                   <th>Node ID</th>
-                  <th style={{textAlign: 'right'}}>Staked Capital</th>
-                  <th style={{textAlign: 'right'}}>Earned Unsettled</th>
+                  <th style={{textAlign: 'right'}}>Staked Collateral</th>
+                  <th style={{textAlign: 'right'}}>Pending Payout</th>
                 </tr>
               </thead>
               <tbody>
@@ -199,7 +199,7 @@ function NetworkExplorer() {
                                   <div style={{display: 'flex', alignItems: 'center', gap: '6px', cursor: 'help'}} title="Phase 4.4: Centralized Beta">
                                       <span className={`status-dot ${n.status.toLowerCase()}`}></span>
                                       <span className={`badge ${n.status.toLowerCase()}`}>
-                                          {n.status === 'SUPERPOSITION' ? 'Q-STATE' : n.status}
+                                          {n.status === 'SUPERPOSITION' ? 'PRE-LOADED' : n.status}
                                       </span>
                                   </div>
                               </td>
@@ -219,7 +219,7 @@ function NetworkExplorer() {
               Averra Network is developed by Stian Hauge and Transisto AS.
           </div>
           <div className="footer-vision">
-              "A solo-founded venture with the ambition to transform the world’s idle hardware into a global, autonomous supercomputer."
+              "Averra is an inference orchestration layer that turns unreliable, distributed GPU capacity into a predictable API for developers."
           </div>
           <div className="footer-copyright">
               © 2026 Averra Network. Built for the decentralized future.
