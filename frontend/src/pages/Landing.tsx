@@ -28,13 +28,13 @@ export default function Landing() {
 
         <div style={{ zIndex: 1, maxWidth: '800px' }}>
           <h2 style={{ fontSize: '64px', fontWeight: 800, marginBottom: '24px', lineHeight: 1.1, letterSpacing: '-0.02em' }}>
-            The Global <br />
-            <span style={{ color: 'var(--brand-cyan)', textShadow: '0 0 30px rgba(0,255,204,0.3)' }}>Autonomous Supercomputer</span>
+            Switch from centralized <br />
+            <span style={{ color: 'var(--brand-cyan)', textShadow: '0 0 30px rgba(0,255,204,0.3)' }}>AI inference</span> in two lines of code
           </h2>
           
           <p style={{ fontSize: '20px', color: 'var(--text-secondary)', marginBottom: '48px', lineHeight: 1.6, maxWidth: '600px', margin: '0 auto 48px auto' }}>
-            Switch from OpenAI to Averra in two lines of code. <br/>
-            <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>10x cheaper. 100% uptime.</span> Powered by idle hardware worldwide.
+            Averra turns fragmented GPU supply into one reliable API for open-source model inference. <br/>
+            <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Lower cost. Fast failover. OpenAI-compatible.</span>
           </p>
 
           {/* Value Prop Columns - 2x2 Grid */}
@@ -44,9 +44,11 @@ export default function Landing() {
             <div className="glass-panel" style={{ padding: '32px', position: 'relative' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                 <Terminal size={20} color="var(--brand-cyan)" />
-                <h3 style={{ fontSize: '18px', margin: 0 }}>For AI Developers</h3>
+                <h3 style={{ fontSize: '18px', margin: 0 }}>OpenAI-Compatible API</h3>
               </div>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px' }}>Drop-in replacement for OpenAI endpoints. Same models, fractional cost.</p>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px' }}>
+                Low-latency, fast-failover inference routed across a fault-tolerant global GPU mesh. Drop-in replacement.
+              </p>
               
               <div className="mono" style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '16px', borderRadius: '8px', fontSize: '13px', color: '#a0a0a0', border: '1px solid var(--border-subtle)' }}>
                 <div style={{ color: '#ff6b6b', textDecoration: 'line-through', marginBottom: '8px' }}>
@@ -62,9 +64,11 @@ export default function Landing() {
             <div className="glass-panel" style={{ padding: '32px', borderColor: 'rgba(180, 0, 255, 0.2)', display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                 <Zap size={20} color="var(--brand-purple)" />
-                <h3 style={{ fontSize: '18px', margin: 0 }}>Node Operator: Linux / Headless</h3>
+                <h3 style={{ fontSize: '18px', margin: 0 }}>Node Operator: Datacenter & Workstations</h3>
               </div>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px', flex: 1 }}>Turn your idle server into an earning asset. One command installation.</p>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px', flex: 1 }}>
+                Monetize underused Linux GPU instances. We profile, route, and monitor your capacity for stable inference supply.
+              </p>
               
               <div className="mono" style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '16px', borderRadius: '8px', fontSize: '13px', color: '#e0e0e0', border: '1px solid rgba(180, 0, 255, 0.2)' }}>
                 <span style={{ color: 'var(--brand-purple)' }}>~ </span>
@@ -78,7 +82,9 @@ export default function Landing() {
                 <Zap size={20} color="var(--brand-purple)" />
                 <h3 style={{ fontSize: '18px', margin: 0 }}>Node Operator: Apple Silicon</h3>
               </div>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px', flex: 1 }}>Monetize your M-series Mac's unified memory. Download the native GUI application.</p>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px', flex: 1 }}>
+                Provide unified memory inference capacity to the mesh. Background settlement requires zero configuration.
+              </p>
               
               <button className="cta-button" style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--brand-purple)', color: 'var(--text-primary)', padding: '14px 16px', fontSize: '14px', justifyContent: 'center' }}>
                  Download for macOS (.dmg)
@@ -89,9 +95,11 @@ export default function Landing() {
             <div className="glass-panel" style={{ padding: '32px', borderColor: 'rgba(180, 0, 255, 0.2)', display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                 <Zap size={20} color="var(--brand-purple)" />
-                <h3 style={{ fontSize: '18px', margin: 0 }}>Node Operator: Windows PC</h3>
+                <h3 style={{ fontSize: '18px', margin: 0 }}>Node Operator: Windows PC & Gaming Rigs</h3>
               </div>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px', flex: 1 }}>Connect your gaming rig's NVIDIA GPU to the grid. Download the Windows installer.</p>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px', flex: 1 }}>
+                Connect your NVIDIA GPU. Our scheduler continuously scores node reliability, uptime, and execution quality.
+              </p>
               
               <button className="cta-button" style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--brand-purple)', color: 'var(--text-primary)', padding: '14px 16px', fontSize: '14px', justifyContent: 'center' }}>
                  Download for Windows (.exe)
@@ -108,7 +116,7 @@ export default function Landing() {
               Averra Network is developed by Stian Hauge and Transisto AS.
           </div>
           <div className="footer-vision">
-              "A solo-founded venture with the ambition to transform the world’s idle hardware into a global, autonomous supercomputer."
+              "Averra is an inference orchestration layer that turns unreliable, distributed GPU capacity into a predictable API for developers."
           </div>
           <div className="footer-copyright">
               © 2026 Averra Network. Built for the decentralized future.
