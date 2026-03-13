@@ -52,7 +52,7 @@ export default function Landing() {
                   base_url = "https://api.openai.com/v1"
                 </div>
                 <div style={{ color: 'var(--brand-cyan)' }}>
-                  base_url = "http://34.32.243.63/v1"
+                  base_url = "https://api.averra.network/v1"
                 </div>
               </div>
             </div>
@@ -65,9 +65,21 @@ export default function Landing() {
               </div>
               <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px' }}>Turn your idle GPU into an earning asset. One command installation.</p>
               
-              <div className="mono" style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '16px', borderRadius: '8px', fontSize: '13px', color: '#e0e0e0', border: '1px solid rgba(180, 0, 255, 0.2)' }}>
-                <span style={{ color: 'var(--brand-purple)' }}>~ </span>
-                curl -sSL https://install.averra.network | sh -s -- --token YOUR_KEY
+              <div style={{ marginBottom: '16px' }}>
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Server / Linux (CLI)</div>
+                  <div className="mono" style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '16px', borderRadius: '8px', fontSize: '13px', color: '#e0e0e0', border: '1px solid rgba(180, 0, 255, 0.2)' }}>
+                    <span style={{ color: 'var(--brand-purple)' }}>~ </span>
+                    curl -sSL https://install.averra.network | sh -s -- --token YOUR_KEY
+                  </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+                  <button className="cta-button" style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)', padding: '10px 16px', fontSize: '13px' }}>
+                     Download for macOS
+                  </button>
+                  <button className="cta-button" style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)', padding: '10px 16px', fontSize: '13px' }}>
+                     Download for Windows
+                  </button>
               </div>
             </div>
 
