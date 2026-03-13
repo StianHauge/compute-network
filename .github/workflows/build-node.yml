@@ -1,0 +1,60 @@
+name: Build Node Agent Binaries
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'node_agent/**'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'node_agent/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller dmgbuild rumps
+        pip install -r node_agent/requirements.txt
+
+    - name: Build macOS App
+      if: matrix.os == 'macos-latest'
+      run: |
+        python node_agent/build_mac_app.py
+        dmgbuild -s node_agent/dmg_settings.py "Averra Node" Averra-Node-Installer.dmg
+
+    - name: Build Windows Exe
+      if: matrix.os == 'windows-latest'
+      run: |
+        pyinstaller --name=AverraNode --onefile --windowed --clean --log-level=WARN --collect-all=uvicorn --collect-all=fastapi --collect-all=starlette --collect-all=anyio --collect-all=pydantic node_agent/mac_app.py
+
+    - name: Upload MacOS Artifact
+      if: matrix.os == 'macos-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: Averra-Node-Installer-macOS
+        path: Averra-Node-Installer.dmg
+
+    - name: Upload Windows Artifact
+      if: matrix.os == 'windows-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: Averra-Node-Installer-Windows
+        path: dist/AverraNode.exe
