@@ -11,7 +11,11 @@ class EventBus:
         self.js = None
         self.connected = False
 
-    async def connect(self, servers=["nats://127.0.0.1:4222"]):
+    async def connect(self, servers=None):
+        import os
+        if servers is None:
+            servers = [os.getenv("NATS_URL", "nats://127.0.0.1:4222")]
+        
         try:
             await self.nc.connect(servers=servers)
             self.js = self.nc.jetstream()

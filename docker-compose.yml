@@ -12,6 +12,12 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  nats:
+    image: nats:2.9-alpine
+    command: ["-js"]
+    ports:
+      - "4222:4222"
+      
   redis:
     image: redis:7
     ports:
@@ -26,9 +32,11 @@ services:
     environment:
       - DATABASE_URL=postgresql://compute_admin:compute_password@postgres:5432/compute_network
       - REDIS_URL=redis://redis:6379/0
+      - NATS_URL=nats://nats:4222
     depends_on:
       - postgres
       - redis
+      - nats
 
   web:
     build:
