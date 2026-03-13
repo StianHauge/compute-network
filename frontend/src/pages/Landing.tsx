@@ -36,10 +36,10 @@ export default function Landing() {
             <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>10x cheaper. 100% uptime.</span> Powered by idle hardware worldwide.
           </p>
 
-          {/* Value Prop Columns */}
+          {/* Value Prop Columns - 2x2 Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', textAlign: 'left', marginBottom: '64px' }}>
             
-            {/* Developer Card */}
+            {/* Developer Card - Top Left */}
             <div className="glass-panel" style={{ padding: '32px', position: 'relative' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                 <Terminal size={20} color="var(--brand-cyan)" />
@@ -57,30 +57,44 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Provider Card */}
-            <div className="glass-panel" style={{ padding: '32px', borderColor: 'rgba(180, 0, 255, 0.2)' }}>
+            {/* Provider Card: Linux - Top Right */}
+            <div className="glass-panel" style={{ padding: '32px', borderColor: 'rgba(180, 0, 255, 0.2)', display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                 <Zap size={20} color="var(--brand-purple)" />
-                <h3 style={{ fontSize: '18px', margin: 0 }}>For Node Operators</h3>
+                <h3 style={{ fontSize: '18px', margin: 0 }}>Node Operator: Linux / Headless</h3>
               </div>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px' }}>Turn your idle GPU into an earning asset. One command installation.</p>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px', flex: 1 }}>Turn your idle server into an earning asset. One command installation.</p>
               
-              <div style={{ marginBottom: '16px' }}>
-                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Server / Linux (CLI)</div>
-                  <div className="mono" style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '16px', borderRadius: '8px', fontSize: '13px', color: '#e0e0e0', border: '1px solid rgba(180, 0, 255, 0.2)' }}>
-                    <span style={{ color: 'var(--brand-purple)' }}>~ </span>
-                    curl -sSL https://install.averra.network | sh -s -- --token YOUR_KEY
-                  </div>
+              <div className="mono" style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '16px', borderRadius: '8px', fontSize: '13px', color: '#e0e0e0', border: '1px solid rgba(180, 0, 255, 0.2)' }}>
+                <span style={{ color: 'var(--brand-purple)' }}>~ </span>
+                curl -sSL https://install.averra.network | sh -s -- --token YOUR_KEY
               </div>
+            </div>
 
-              <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-                  <button className="cta-button" style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)', padding: '10px 16px', fontSize: '13px' }}>
-                     Download for macOS
-                  </button>
-                  <button className="cta-button" style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)', padding: '10px 16px', fontSize: '13px' }}>
-                     Download for Windows
-                  </button>
+            {/* Provider Card: macOS - Bottom Left */}
+            <div className="glass-panel" style={{ padding: '32px', borderColor: 'rgba(180, 0, 255, 0.2)', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                <Zap size={20} color="var(--brand-purple)" />
+                <h3 style={{ fontSize: '18px', margin: 0 }}>Node Operator: Apple Silicon</h3>
               </div>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px', flex: 1 }}>Monetize your M-series Mac's unified memory. Download the native GUI application.</p>
+              
+              <button className="cta-button" style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--brand-purple)', color: 'var(--text-primary)', padding: '14px 16px', fontSize: '14px', justifyContent: 'center' }}>
+                 Download for macOS (.dmg)
+              </button>
+            </div>
+
+            {/* Provider Card: Windows - Bottom Right */}
+            <div className="glass-panel" style={{ padding: '32px', borderColor: 'rgba(180, 0, 255, 0.2)', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                <Zap size={20} color="var(--brand-purple)" />
+                <h3 style={{ fontSize: '18px', margin: 0 }}>Node Operator: Windows PC</h3>
+              </div>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px', flex: 1 }}>Connect your gaming rig's NVIDIA GPU to the grid. Download the Windows installer.</p>
+              
+              <button className="cta-button" style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--brand-purple)', color: 'var(--text-primary)', padding: '14px 16px', fontSize: '14px', justifyContent: 'center' }}>
+                 Download for Windows (.exe)
+              </button>
             </div>
 
           </div>
