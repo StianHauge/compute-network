@@ -1,5 +1,6 @@
 import redis
 import json
+import os
 import logging
 
 logger = logging.getLogger("RedisStore")
@@ -46,7 +47,11 @@ end
 class RedisStateGrid:
     def __init__(self, host='localhost', port=6379, db=0):
         try:
-            self.client = redis.Redis(host=host, port=port, db=db, decode_responses=True)
+            redis_url = os.environ.get("REDIS_URL")
+            if redis_url:
+                self.client = redis.from_url(redis_url, decode_responses=True)
+            else:
+                self.client = redis.Redis(host=host, port=port, db=db, decode_responses=True)
             self.reserve_script = self.client.register_script(RESERVE_NODE_LUA)
             self.settle_script = self.client.register_script(DECREMENT_CREDITS_LUA)
             logger.info(f"Connected to Redis In-Memory Grid at {host}:{port}")

@@ -3,6 +3,7 @@ import uuid
 import random
 import threading
 import logging
+import os
 
 try:
     import redis
@@ -17,7 +18,11 @@ class MockDataEngine:
     def __init__(self, host='localhost', port=6379):
         self.running = False
         try:
-            self.client = redis.Redis(host=host, port=port, db=0, decode_responses=True)
+            redis_url = os.environ.get("REDIS_URL")
+            if redis_url:
+                self.client = redis.from_url(redis_url, decode_responses=True)
+            else:
+                self.client = redis.Redis(host=host, port=port, db=0, decode_responses=True)
         except Exception:
             self.client = None
             
