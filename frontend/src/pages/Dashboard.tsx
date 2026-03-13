@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Activity, Server, Zap, CreditCard, ShieldAlert, LogOut, TerminalSquare, Copy, BarChart3 } from 'lucide-react';
 import '../index.css';
+import logo from '../assets/logo.png';
 
 // --- Mock Data ---
 const MOCK_CREDITS = 49250.5;
@@ -21,9 +22,9 @@ export default function Dashboard() {
       
       {/* Top Header */}
       <header className="header" style={{ padding: '16px 32px', borderBottom: '1px solid var(--border-subtle)' }}>
-        <div className="header-title">
-          <Activity size={24} color="var(--brand-cyan)" />
-          <h1 style={{ fontSize: '18px' }}>Averra <span className="mono" style={{ color: 'var(--text-secondary)' }}>// Command Center</span></h1>
+        <div className="header-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <img src={logo} alt="Averra Logo" style={{ width: '24px', height: '24px' }} />
+          <h1 style={{ fontSize: '18px', margin: 0 }}>Averra <span className="mono" style={{ color: 'var(--text-secondary)' }}>// Command Center</span></h1>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
           <div className="mono" style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>SESSION_ID: 8a4b-9f2c</div>

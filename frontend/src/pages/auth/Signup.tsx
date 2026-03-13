@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Zap, UserPlus, Loader2 } from 'lucide-react';
 import '../../index.css';
+import logo from '../../assets/logo.png';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
@@ -44,7 +45,7 @@ export default function Signup() {
       <div style={{ position: 'absolute', top: '0', right: '0', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(180, 0, 255, 0.05) 0%, rgba(10, 10, 10, 0) 70%)', zIndex: 0, pointerEvents: 'none' }}></div>
 
       <Link to="/" style={{ position: 'absolute', top: '24px', left: '48px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 1 }}>
-        <Zap size={24} color="var(--brand-cyan)" />
+        <img src={logo} alt="Averra Logo" style={{ width: '24px', height: '24px' }} />
         <span style={{ fontSize: '18px', color: 'var(--text-primary)', fontWeight: '600' }}>Averra</span>
       </Link>
 

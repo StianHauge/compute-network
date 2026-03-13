@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Terminal, Zap } from 'lucide-react';
 import '../index.css';
+import logo from '../assets/logo.png';
 
 export default function Landing() {
   return (
@@ -8,9 +9,9 @@ export default function Landing() {
       
       {/* Top Navigation */}
       <nav style={{ display: 'flex', justifyContent: 'space-between', padding: '24px 48px', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)' }}>
-        <div className="header-title">
-          <Zap size={28} color="var(--brand-cyan)" />
-          <h1 style={{ fontSize: '20px', margin: 0 }}>Averra Engine</h1>
+        <div className="header-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <img src={logo} alt="Averra Logo" style={{ width: '28px', height: '28px' }} />
+          <h1 style={{ fontSize: '20px', margin: 0 }}>Averra</h1>
         </div>
         <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
           <Link to="/network" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} className="hover-cyan">Network Explorer</Link>

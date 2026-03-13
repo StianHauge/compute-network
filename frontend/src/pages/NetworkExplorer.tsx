@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Activity, Server, Cpu, Zap, CreditCard, Coins, ShieldAlert } from 'lucide-react';
 import '../index.css';
+import logo from '../assets/logo.png';
 
 // --- Types ---
 interface NetworkStats {
@@ -58,9 +59,9 @@ function NetworkExplorer() {
     <div className="dashboard-container">
       {/* Header */}
       <header className="header">
-        <div className="header-title">
-          <Activity size={32} color="var(--brand-cyan)" />
-          <h1>Averra Engine <span>// Control Plane</span></h1>
+        <div className="header-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <img src={logo} alt="Averra Logo" style={{ width: '32px', height: '32px' }} />
+          <h1>Averra <span>// Control Plane</span></h1>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', cursor: 'help' }} title="Phase 4.4: Centralized Beta">

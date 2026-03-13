@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Zap, LogIn, Loader2 } from 'lucide-react';
 import '../../index.css';
+import logo from '../../assets/logo.png';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -41,7 +42,7 @@ export default function Login() {
     <div className="landing-container" style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
       
       <Link to="/" style={{ position: 'absolute', top: '24px', left: '48px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <Zap size={24} color="var(--brand-cyan)" />
+        <img src={logo} alt="Averra Logo" style={{ width: '24px', height: '24px' }} />
         <span style={{ fontSize: '18px', color: 'var(--text-primary)', fontWeight: '600' }}>Averra</span>
       </Link>
 
