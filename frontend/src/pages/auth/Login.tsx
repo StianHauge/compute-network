@@ -1,18 +1,40 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Zap, LogIn } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Zap, LogIn, Loader2 } from 'lucide-react';
 import '../../index.css';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual login logic with backend
-    console.log("Mock login attempt for:", email);
-    // On success, redirect to dashboard:
-    // navigate('/dashboard');
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'Login failed');
+      }
+
+      localStorage.setItem('averra_token', data.api_key);
+      navigate('/dashboard');
+    } catch (err: any) {
+      setError(err.message || 'An error occurred during login');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -28,6 +50,11 @@ export default function Login() {
           <h2 style={{ fontSize: '24px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>Sign in to Averra</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Welcome back to the Command Center.</p>
         </div>
+        {error && (
+          <div style={{ padding: '12px', borderRadius: '6px', background: 'rgba(255,50,50,0.1)', border: '1px solid rgba(255,50,50,0.3)', color: '#ff6b6b', fontSize: '14px', textAlign: 'center' }}>
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -56,9 +83,9 @@ export default function Login() {
             />
           </div>
 
-          <button type="submit" className="cta-button" style={{ marginTop: '8px', padding: '14px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', width: '100%' }}>
-            <LogIn size={18} />
-            Initialize Session
+          <button type="submit" disabled={isLoading} className="cta-button" style={{ marginTop: '8px', padding: '14px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', width: '100%', opacity: isLoading ? 0.7 : 1, cursor: isLoading ? 'not-allowed' : 'pointer' }}>
+            {isLoading ? <Loader2 size={18} className="animate-spin" /> : <LogIn size={18} />}
+            {isLoading ? 'Initializing...' : 'Initialize Session'}
           </button>
         </form>
 

@@ -1,18 +1,40 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Zap, UserPlus } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Zap, UserPlus, Loader2 } from 'lucide-react';
 import '../../index.css';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual signup logic with backend
-    console.log("Mock signup attempt for:", email);
-    // On success, redirect to login or dashboard:
-    // navigate('/login');
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'Signup failed');
+      }
+
+      localStorage.setItem('averra_token', data.api_key);
+      navigate('/dashboard');
+    } catch (err: any) {
+      setError(err.message || 'An error occurred during signup');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -31,6 +53,11 @@ export default function Signup() {
           <h2 style={{ fontSize: '24px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>Deploy to Averra</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Get your API key and claim your 50k free credits.</p>
         </div>
+        {error && (
+          <div style={{ padding: '12px', borderRadius: '6px', background: 'rgba(255,50,50,0.1)', border: '1px solid rgba(255,50,50,0.3)', color: '#ff6b6b', fontSize: '14px', textAlign: 'center' }}>
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -59,9 +86,9 @@ export default function Signup() {
             />
           </div>
 
-          <button type="submit" className="cta-button" style={{ marginTop: '8px', padding: '14px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', width: '100%', background: 'linear-gradient(90deg, rgba(0,255,204,0.1) 0%, rgba(180,0,255,0.1) 100%)', borderColor: 'var(--brand-purple)' }}>
-            <UserPlus size={18} color="var(--brand-cyan)"/>
-            Generate API Key
+          <button type="submit" disabled={isLoading} className="cta-button" style={{ marginTop: '8px', padding: '14px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', width: '100%', background: 'linear-gradient(90deg, rgba(0,255,204,0.1) 0%, rgba(180,0,255,0.1) 100%)', borderColor: 'var(--brand-purple)', opacity: isLoading ? 0.7 : 1, cursor: isLoading ? 'not-allowed' : 'pointer' }}>
+            {isLoading ? <Loader2 size={18} className="animate-spin" color="var(--brand-cyan)"/> : <UserPlus size={18} color="var(--brand-cyan)"/>}
+            {isLoading ? 'Generating Key...' : 'Generate API Key'}
           </button>
         </form>
 
