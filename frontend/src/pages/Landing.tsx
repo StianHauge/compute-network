@@ -86,9 +86,9 @@ export default function Landing() {
                 Provide unified memory inference capacity to the mesh for SLMs/MLMs. Automated payouts and background settlement require zero configuration.
               </p>
               
-              <button className="cta-button" style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--brand-purple)', color: 'var(--text-primary)', padding: '14px 16px', fontSize: '14px', justifyContent: 'center' }}>
+              <a href="/downloads/Averra-Node-Installer.dmg" download className="cta-button" style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--brand-purple)', color: 'var(--text-primary)', padding: '14px 16px', fontSize: '14px', justifyContent: 'center', textDecoration: 'none', display: 'flex' }}>
                  Download for macOS (.dmg)
-              </button>
+              </a>
             </div>
 
             {/* Provider Card: Windows - Bottom Right */}
@@ -101,9 +101,9 @@ export default function Landing() {
                 Connect your NVIDIA GPU with sufficient VRAM headroom. Our scheduler continuously scores node reliability, uptime, and execution quality.
               </p>
               
-              <button className="cta-button" style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--brand-purple)', color: 'var(--text-primary)', padding: '14px 16px', fontSize: '14px', justifyContent: 'center' }}>
+              <a href="/downloads/Averra-Node-Installer.exe" download className="cta-button" style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--brand-purple)', color: 'var(--text-primary)', padding: '14px 16px', fontSize: '14px', justifyContent: 'center', textDecoration: 'none', display: 'flex' }}>
                  Download for Windows (.exe)
-              </button>
+              </a>
             </div>
 
           </div>
