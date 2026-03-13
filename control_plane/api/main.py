@@ -20,6 +20,7 @@ from control_plane.agents.auditor import AuditorAgent
 from control_plane.agents.dispatcher import DispatcherAgent
 from control_plane.agents.accountant import accountant
 from control_plane.events.mock_data_engine import mock_engine
+from control_plane.scheduler.engine import Scheduler
 
 app = FastAPI(title="Compute Network Control Plane API")
 
