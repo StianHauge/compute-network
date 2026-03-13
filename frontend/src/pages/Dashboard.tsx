@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Activity, Server, Zap, CreditCard, ShieldAlert, LogOut, TerminalSquare, Copy, BarChart3 } from 'lucide-react';
+import { Server, Zap, CreditCard, ShieldAlert, LogOut, TerminalSquare, Copy, BarChart3 } from 'lucide-react';
 import '../index.css';
 import logo from '../assets/logo.png';
 

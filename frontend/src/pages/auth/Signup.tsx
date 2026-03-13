@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Zap, UserPlus, Loader2 } from 'lucide-react';
+import { UserPlus, Loader2 } from 'lucide-react';
 import '../../index.css';
 import logo from '../../assets/logo.png';
 
