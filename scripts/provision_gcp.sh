@@ -28,7 +28,7 @@ gcloud compute firewall-rules create allow-http-https \
     --action=ALLOW \
     --rules=tcp:80,tcp:443,tcp:8000 \
     --source-ranges=0.0.0.0/0 \
-    --target-tags=web-server
+    --target-tags=web-server || echo "Firewall rule already exists, ignoring."
 
 echo "[6/6] Provisioning Ubuntu VM Instance: $INSTANCE_NAME..."
 gcloud compute instances create $INSTANCE_NAME \
