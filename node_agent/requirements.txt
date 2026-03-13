@@ -1,0 +1,8 @@
+requests
+pydantic
+docker
+flask
+flask-socketio
+pynvml
+websockets
+torch

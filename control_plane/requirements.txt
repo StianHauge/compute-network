@@ -1,0 +1,14 @@
+anyio==4.12.1
+fastapi==0.135.1
+psycopg2-binary==2.9.11
+pydantic==2.12.5
+pydantic_core==2.41.5
+uvicorn==0.41.0
+bcrypt==4.0.1
+email-validator==2.3.0
+passlib==1.7.4
+PyJWT==2.12.0
+SQLAlchemy==2.0.36
+websockets
+redis==5.0.3
+nats-py==2.7.0
