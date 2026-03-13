@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Server, Zap, CreditCard, ShieldAlert, LogOut, TerminalSquare, Copy, BarChart3 } from 'lucide-react';
 import '../index.css';
