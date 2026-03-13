@@ -23,7 +23,7 @@ class Aggregator:
             sub = await js.subscribe("node.telemetry.>", stream="TELEMETRY")
             logger.info("Aggregator started listening to NATS Telemetry stream...")
             
-            async for msg in sub:
+            async for msg in sub.messages:
                 try:
                     data = json.loads(msg.data.decode())
                     node_id = msg.subject.split(".")[-1]
