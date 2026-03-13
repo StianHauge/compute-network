@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Activity, Server, Cpu, Zap, CreditCard, Coins, ShieldAlert } from 'lucide-react';
-import './index.css';
+import '../index.css';
 
 // --- Types ---
 interface NetworkStats {
