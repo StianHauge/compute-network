@@ -238,8 +238,39 @@ class NodeAgent:
         hw_dump["temperature_c"] = temp_c
         hw_dump["pcie_bw_usage"] = (pcie_tx + pcie_rx) / 1024.0 # KB/s
         
-        # Dispatcher requires vram_free to be >= 8 for mistral-7b
-        hw_dump["vram_free"] = self.hardware.gpu_vram if self.hardware.gpu_vram else 12.0
+        import platform
+        if platform.system() == "Darwin" and not (self.hardware.gpu_vram and self.hardware.gpu_vram > 0):
+            import subprocess
+            try:
+                # Intel/AMD Macs have dedicated VRAM listed in system_profiler
+                sp = subprocess.check_output(['system_profiler', 'SPDisplaysDataType']).decode()
+                max_vram_gb = 0.0
+                for line in sp.split('\n'):
+                    if 'VRAM' in line:
+                        parts = line.split(':')
+                        if len(parts) > 1:
+                            val = parts[1].strip().split(' ')[0]
+                            if 'GB' in line:
+                                v = float(val)
+                            elif 'MB' in line:
+                                v = float(val) / 1024.0
+                            else:
+                                v = 0.0
+                            if v > max_vram_gb:
+                                max_vram_gb = v
+                
+                if max_vram_gb > 0:
+                    hw_dump["vram_free"] = max_vram_gb
+                else: # Fallback to Unified Memory if no discrete VRAM listed
+                    pagesize = int(subprocess.check_output(['sysctl', '-n', 'hw.pagesize']).strip())
+                    vm_stat = subprocess.check_output(['vm_stat']).decode()
+                    free_pages = sum(int(l.split(':')[1].strip().strip('.')) for l in vm_stat.split('\n') if 'Pages free:' in l or 'Pages inactive:' in l)
+                    hw_dump["vram_free"] = float((free_pages * pagesize) / (1024 ** 3))
+            except Exception as e:
+                hw_dump["vram_free"] = 0.0
+        else:
+            hw_dump["vram_free"] = self.hardware.gpu_vram if (self.hardware.gpu_vram and self.hardware.gpu_vram > 0) else 0.0
+        
         return hw_dump
 
     def register(self):

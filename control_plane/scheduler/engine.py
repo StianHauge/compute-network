@@ -63,7 +63,8 @@ class Scheduler:
                     continue
                 
                 reqs = job.parameters or {}
-                req_vram = reqs.get("vram_required", 8)
+                # Drop required VRAM to 1GB to support simulated Intel Mac Nodes taking jobs
+                req_vram = reqs.get("vram_required", 1)
 
                 # Find best node with TPL mathematics
                 assigned_node = self._find_best_node(job, online_nodes, req_vram)
