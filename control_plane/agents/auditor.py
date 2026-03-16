@@ -58,6 +58,11 @@ class AuditorAgent:
                     # Only ~12.5% chance to randomly audit stable ONLINE nodes per cycle
                     continue
 
+                # Final check: the node MUST exist in the DB
+                db_node = db.query(schema.Node).filter(schema.Node.id == node_id).first()
+                if not db_node:
+                    continue
+
                 # The Honey-Pot: Deterministic Mathematical Prompt
                 job_id = str(uuid.uuid4())
                 prompt = "Calculate precisely: 345 * 12. Output only the final numerical answer."
