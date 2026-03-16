@@ -42,6 +42,9 @@ class Node(Base):
     jobs = relationship("Job", back_populates="node")
     wallet = relationship("Wallet", back_populates="node", uselist=False)
     cached_models = relationship("ModelCache", back_populates="node", cascade="all, delete-orphan")
+    
+    developer_id = Column(String, ForeignKey('developers.id'), nullable=True)
+    developer = relationship("Developer", back_populates="nodes")
 
 class ModelCache(Base):
     __tablename__ = 'model_cache'
@@ -90,8 +93,11 @@ class Developer(Base):
     email = Column(String, unique=True, index=True)
     password_hash = Column(String)
     api_key = Column(String, unique=True, index=True)
+    node_link_key = Column(String, unique=True, index=True, nullable=True) # Used specifically for nodes to register under this dev
     compute_credits = Column(Float, default=50.0) # 50 free credits on sign up
     created_at = Column(DateTime, default=datetime.utcnow)
+    
+    nodes = relationship("Node", back_populates="developer")
 
 class Reward(Base):
     __tablename__ = 'rewards'

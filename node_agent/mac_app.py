@@ -29,8 +29,33 @@ class AverraNodeApp(rumps.App):
             self.wallet_menu,
             self.models_menu,
             None,
+            rumps.MenuItem(title="Set Node Link Key...", callback=self.set_node_link_key),
             rumps.MenuItem(title="View Local Dashboard", callback=self.open_dashboard)
         ]
+
+    def get_saved_key(self):
+        key_path = os.path.expanduser("~/.averra_node_link_key")
+        if os.path.exists(key_path):
+            with open(key_path, "r") as f:
+                return f.read().strip()
+        return ""
+
+    def save_key(self, key):
+        key_path = os.path.expanduser("~/.averra_node_link_key")
+        with open(key_path, "w") as f:
+            f.write(key.strip())
+
+    def set_node_link_key(self, sender):
+        current_key = self.get_saved_key()
+        response = rumps.Window(
+            message="Enter your Node Link Key from the Developer Dashboard:",
+            title="Authenticate Node",
+            default_text=current_key,
+            dimensions=(300, 24)
+        ).run()
+        if response.clicked:
+            self.save_key(response.text)
+            rumps.notification(title="Averra Node", subtitle="Key Saved", message="Node Link Key has been updated.")
 
     @rumps.timer(5)
     def refresh_stats(self, sender):
@@ -56,7 +81,11 @@ class AverraNodeApp(rumps.App):
             self.title = "⚡️(Running)"
             
             # Start Node in background thread
-            self.agent = NodeAgent()
+            link_key = self.get_saved_key()
+            if not link_key:
+                rumps.notification("Averra", "Missing Link Key", "Running as an anonymous community node. Set Key to link to your dashboard.")
+                
+            self.agent = NodeAgent(node_link_key=link_key)
             self.agent_thread = threading.Thread(target=self.agent.run, daemon=True)
             self.agent_thread.start()
             rumps.notification(title="Averra Node", subtitle="Node Started", message="GPU connected to the inference fabric.")

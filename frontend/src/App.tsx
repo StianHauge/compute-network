@@ -1,3 +1,4 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Landing from './pages/Landing';
 import NetworkExplorer from './pages/NetworkExplorer';
@@ -7,10 +8,15 @@ import Dashboard from './pages/Dashboard';
 
 import './index.css';
 
-function App() {
-  // A simple placeholder for auth state. You might use context or a store here later.
-  const isAuthenticated = false; // Replace with actual auth check later
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const token = localStorage.getItem('averra_token');
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+}
 
+function App() {
   return (
     <Router>
       <Routes>
@@ -22,7 +28,11 @@ function App() {
         {/* Protected Dashboard Route */}
         <Route 
           path="/dashboard" 
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" replace />} 
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } 
         />
       </Routes>
     </Router>

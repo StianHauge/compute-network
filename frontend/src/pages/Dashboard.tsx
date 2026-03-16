@@ -1,21 +1,42 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Server, Zap, CreditCard, ShieldAlert, LogOut, TerminalSquare, Copy, BarChart3 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Server, Zap, CreditCard, ShieldAlert, LogOut, TerminalSquare, Copy, BarChart3, HardDrive } from 'lucide-react';
 import '../index.css';
 import logo from '../assets/logo.png';
-
-// --- Mock Data ---
-const MOCK_CREDITS = 49250.5;
-const MOCK_API_KEY = "AVR-************************3f9a";
-const MOCK_NODES = [
-  { id: "NODE-8F2A", model: "RTX 4090", location: "Oslo, NO", status: "ACTIVE", vram: 24.0, temp: 68.5, pcie: 28.4, earned: 14.250 },
-  { id: "NODE-3B91", model: "A100", location: "Frankfurt, DE", status: "SUPERPOSITION", vram: 80.0, temp: 72.1, pcie: 56.2, earned: 105.400 },
-  { id: "NODE-C744", model: "RTX 3090", location: "Austin, TX", status: "THERMAL", vram: 24.0, temp: 88.0, pcie: 14.1, earned: 8.920 }
-];
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<'developer' | 'infrastructure' | 'vault'>('developer');
   const [stakedAvr, setStakedAvr] = useState(15000);
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = localStorage.getItem("averra_token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+      try {
+        const response = await fetch("/api/developer/dashboard", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error("Auth failed");
+        setDashboardData(await response.json());
+      } catch (e) {
+        localStorage.removeItem("averra_token");
+        navigate("/login");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, [navigate]);
+
+  if (isLoading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-main)', color: 'white' }}><div className="animate-spin"><Server /></div></div>;
+
+  const totalEarned = dashboardData?.nodes?.reduce((acc: number, n: any) => acc + n.earned, 0) || 0;
 
   return (
     <div className="dashboard-container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -28,9 +49,9 @@ export default function Dashboard() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
           <div className="mono" style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>SESSION_ID: 8a4b-9f2c</div>
-          <Link to="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }} className="hover-red">
+          <button onClick={() => { localStorage.removeItem("averra_token"); navigate("/login"); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: '16px' }} className="hover-red">
             <LogOut size={16} /> Disconnect
-          </Link>
+          </button>
         </div>
       </header>
 
@@ -83,20 +104,31 @@ export default function Dashboard() {
                     <CreditCard size={16} /> Compute Credits
                   </div>
                   <div style={{ fontSize: '36px', fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '24px' }}>
-                    {MOCK_CREDITS.toLocaleString()} <span style={{ fontSize: '16px', color: 'var(--text-secondary)', fontWeight: 'normal' }}>CRD</span>
+                    {dashboardData?.compute_credits?.toLocaleString()} <span style={{ fontSize: '16px', color: 'var(--text-secondary)', fontWeight: 'normal' }}>CRD</span>
                   </div>
                   <button className="cta-button" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>Top Up via Stripe</button>
                 </div>
 
                 <div className="glass-panel" style={{ padding: '24px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: 'var(--text-secondary)' }}>
-                    <Zap size={16} /> Universal Remote (API / Node Key)
+                    <Zap size={16} /> Developer API Key
                   </div>
                   <div className="mono" style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '16px', borderRadius: '6px', fontSize: '14px', border: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <span>{MOCK_API_KEY}</span>
-                    <Copy size={16} style={{ cursor: 'pointer', color: 'var(--text-secondary)' }} />
+                    <span>{dashboardData?.api_key}</span>
+                    <Copy size={16} style={{ cursor: 'pointer', color: 'var(--text-secondary)' }} onClick={() => navigator.clipboard.writeText(dashboardData?.api_key)} />
                   </div>
-                  <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Use this key for both OpenAI-compatible API requests and authenticating your Sentinel nodes.</p>
+                  <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Use this key in Authorization Headers to pay for API inferences.</p>
+                </div>
+                
+                <div className="glass-panel" style={{ padding: '24px', gridColumn: 'span 2' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: 'var(--brand-purple)' }}>
+                    <HardDrive size={16} /> Node Link Key
+                  </div>
+                  <div className="mono" style={{ backgroundColor: 'rgba(180, 0, 255, 0.1)', padding: '16px', borderRadius: '6px', fontSize: '14px', border: '1px solid rgba(180, 0, 255, 0.3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', color: 'white' }}>
+                    <span>{dashboardData?.node_link_key}</span>
+                    <Copy size={16} style={{ cursor: 'pointer', color: 'white' }} onClick={() => navigator.clipboard.writeText(dashboardData?.node_link_key)} />
+                  </div>
+                  <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Paste this Node Link Key directly into your local Averra Node App settings to link your hardware. Do not share this key.</p>
                 </div>
               </div>
 
@@ -121,7 +153,7 @@ export default function Dashboard() {
                 </div>
                 <div className="glass-panel" style={{ padding: '12px 24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
                    <div style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>TOTAL EARNED</div>
-                   <div style={{ color: 'var(--brand-gold)', fontSize: '24px', fontWeight: 'bold' }}>128.570 <span style={{fontSize: '14px'}}>$AVR</span></div>
+                   <div style={{ color: 'var(--brand-gold)', fontSize: '24px', fontWeight: 'bold' }}>{totalEarned.toFixed(3)} <span style={{fontSize: '14px'}}>$AVR</span></div>
                 </div>
               </div>
 
@@ -149,14 +181,20 @@ export default function Dashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {MOCK_NODES.map(n => (
+                    {dashboardData?.nodes?.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} style={{ textAlign: 'center', padding: '48px', color: 'var(--text-secondary)' }}>
+                          No Nodes Linked. Enter your <strong style={{color:'var(--brand-purple)'}}>Node Link Key</strong> into the Desktop App to connect hardware.
+                        </td>
+                      </tr>
+                    ) : dashboardData?.nodes?.map((n: any) => (
                       <tr key={n.id}>
-                        <td className="mono">{n.id}</td>
+                        <td className="mono" style={{ fontSize: '12px' }}>{n.id.substring(0,8)}</td>
                         <td className="mono">{n.model}</td>
                         <td>{n.location}</td>
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span className={`status-dot ${n.status === 'ACTIVE' ? 'online' : n.status === 'SUPERPOSITION' ? 'superposition' : 'thermal'}`} style={{ backgroundColor: n.status === 'SUPERPOSITION' ? 'var(--brand-purple)' : n.status === 'THERMAL' ? '#ff4444' : ''}}></span>
+                            <span className={`status-dot ${n.status === 'ONLINE' ? 'online' : n.status === 'SUPERPOSITION' ? 'superposition' : 'thermal'}`} style={{ backgroundColor: n.status === 'SUPERPOSITION' ? 'var(--brand-purple)' : n.status === 'THERMAL' ? '#ff4444' : ''}}></span>
                             <span style={{ fontSize: '10px', letterSpacing: '0.05em', color: n.status === 'THERMAL' ? '#ff4444' : 'var(--text-secondary)'}}>{n.status}</span>
                           </div>
                         </td>

@@ -183,9 +183,10 @@ class EnclaveRuntime(InferenceRuntime):
             yield f"[ENCRYPTED_CHUNK] {self._encrypt_in_enclave(chunk)}"
 
 class NodeAgent:
-    def __init__(self):
+    def __init__(self, node_link_key=None):
         self.node_id = None
         self.is_running = False
+        self.node_link_key = node_link_key
         self.hardware = self._detect_hardware()
         # Pre-seed with models so it can serve the simulation out of the box
         # We explicitly omit llama-3-8b to test the Dispatcher Agent's scale-up logic
@@ -279,6 +280,9 @@ class NodeAgent:
         payload["address"] = f"127.0.0.1-mock-{os.getpid()}"
         payload["models"] = self.cached_models
         payload["node_type"] = os.getenv("NODE_TYPE", "community")
+        if self.node_link_key:
+            payload["node_link_key"] = self.node_link_key
+            
         headers = {}
         if NODE_AUTH_TOKEN:
             headers["Authorization"] = f"Bearer {NODE_AUTH_TOKEN}"

@@ -94,6 +94,7 @@ class NodeRegisterRequest(BaseModel):
     location: str
     node_type: str = "community"
     models: Optional[List[Union[str, CachedModelInfo]]] = []
+    node_link_key: Optional[str] = None
 
 class NodeHeartbeatRequest(BaseModel):
     node_id: str
@@ -150,6 +151,44 @@ def verify_node_token(auth: HTTPAuthorizationCredentials = Security(security)):
         raise HTTPException(status_code=401, detail="Invalid Network Token")
     return True
 
+def verify_developer_token(auth: HTTPAuthorizationCredentials = Security(security), db: Session = Depends(get_db)):
+    if not auth:
+        raise HTTPException(status_code=401, detail="Missing Token")
+    dev = db.query(schema.Developer).filter(schema.Developer.api_key == auth.credentials).first()
+    if not dev:
+        raise HTTPException(status_code=401, detail="Invalid API Key")
+    return dev
+
+@app.get("/api/developer/dashboard")
+def get_developer_dashboard(dev: schema.Developer = Depends(verify_developer_token), db: Session = Depends(get_db)):
+    from control_plane.database.redis_store import redis_store
+    live_nodes_data = redis_store.get_all_routable_nodes()
+    redis_map = {n["id"]: n for n in live_nodes_data}
+    
+    node_list = []
+    for n in dev.nodes:
+        state = redis_map.get(n.id, {})
+        earned = n.wallet.withdrawable_balance + n.wallet.pending_rewards if n.wallet else 0.0
+        node_list.append({
+            "id": n.id,
+            "model": n.gpu_model or "CPU",
+            "vram": n.gpu_vram or 0.0,
+            "location": n.location,
+            "status": state.get("status", n.status.value),
+            "temp": 45.0 + (len(n.id) % 30), # mock temp
+            "pcie": 16.0,
+            "earned": earned
+        })
+        
+    return {
+        "id": dev.id,
+        "email": dev.email,
+        "api_key": dev.api_key,
+        "node_link_key": dev.node_link_key,
+        "compute_credits": dev.compute_credits,
+        "nodes": node_list
+    }
+
 @app.post("/auth/signup")
 def signup(request: SignupRequest, db: Session = Depends(get_db)):
     # Check if user exists
@@ -159,6 +198,7 @@ def signup(request: SignupRequest, db: Session = Depends(get_db)):
         
     dev_id = str(uuid.uuid4())
     api_key = f"sk-av-{secrets.token_urlsafe(32)}"
+    node_link_key = f"nk-av-{secrets.token_urlsafe(16)}"
     hashed_pw = get_password_hash(request.password)
     
     new_dev = schema.Developer(
@@ -166,12 +206,13 @@ def signup(request: SignupRequest, db: Session = Depends(get_db)):
         email=request.email,
         password_hash=hashed_pw,
         api_key=api_key,
+        node_link_key=node_link_key,
         compute_credits=50.0  # Free starting credits
     )
     db.add(new_dev)
     db.commit()
     
-    return {"id": dev_id, "api_key": api_key, "compute_credits": 50.0}
+    return {"id": dev_id, "api_key": api_key, "node_link_key": node_link_key, "compute_credits": 50.0}
 
 @app.post("/auth/login")
 def login(request: LoginRequest, db: Session = Depends(get_db)):
@@ -182,12 +223,18 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
     if not verify_password(request.password, dev.password_hash):
         raise HTTPException(status_code=401, detail="Invalid email or password")
         
-    return {"id": dev.id, "api_key": dev.api_key, "compute_credits": dev.compute_credits}
+    return {"id": dev.id, "api_key": dev.api_key, "node_link_key": dev.node_link_key, "compute_credits": dev.compute_credits}
 
 @app.post("/nodes/register")
 def register_node(request: NodeRegisterRequest, db: Session = Depends(get_db), verified: bool = Depends(verify_node_token)):
     node_id = str(uuid.uuid4())
     
+    developer_id = None
+    if request.node_link_key:
+        dev = db.query(schema.Developer).filter(schema.Developer.node_link_key == request.node_link_key).first()
+        if dev:
+            developer_id = dev.id
+            
     # Map raw string to enum
     ntype = schema.NodeType.INTERNAL if request.node_type.lower() == "internal" else schema.NodeType.COMMUNITY
     
@@ -203,7 +250,8 @@ def register_node(request: NodeRegisterRequest, db: Session = Depends(get_db), v
         location=request.location,
         node_type=ntype,
         status=schema.NodeStatus.ONLINE,
-        last_heartbeat=datetime.utcnow()
+        last_heartbeat=datetime.utcnow(),
+        developer_id=developer_id
     )
     new_wallet = schema.Wallet(
         node_id=node_id,
