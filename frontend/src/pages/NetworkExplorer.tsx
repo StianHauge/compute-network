@@ -39,7 +39,7 @@ function NetworkExplorer() {
         const [statsRes, nodesRes, ledgerRes] = await Promise.all([
           fetch('/api/network/stats'),
           fetch('/api/nodes/live'),
-          fetch('/api/economy/mock-ledger')
+          fetch('/api/economy/live-ledger')
         ]);
         
         if (statsRes.ok) setStats(await statsRes.json());

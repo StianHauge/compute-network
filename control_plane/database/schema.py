@@ -102,8 +102,13 @@ class Reward(Base):
     amount = Column(Float)
     timestamp = Column(DateTime, default=datetime.utcnow)
 
-# Configure SQLite directly to replace PostgreSQL temporarily
-engine = create_engine("sqlite:///./compute_network.db", connect_args={"check_same_thread": False, "timeout": 15})
+import os
+
+# Use DATABASE_URL from .env or docker-compose, fallback to local sqlite if missing
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./compute_network.db")
+
+connect_args = {"check_same_thread": False, "timeout": 15} if "sqlite" in DATABASE_URL else {}
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def init_db():

@@ -8,7 +8,7 @@ import os
 # Ensure the parent directory is in the path so we can import agent logic
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from node_agent.agent.core import NodeAgent, CONTROL_PLANE_URL
+from node_agent.agent.core import NodeAgent, CONTROL_PLANE_URL, NODE_AUTH_TOKEN
 
 class AverraNodeApp(rumps.App):
     def __init__(self):
@@ -36,7 +36,10 @@ class AverraNodeApp(rumps.App):
     def refresh_stats(self, sender):
         if self.is_running and self.agent and self.agent.node_id:
             try:
-                resp = requests.get(f"{CONTROL_PLANE_URL}/nodes/{self.agent.node_id}/wallet")
+                headers = {}
+                if NODE_AUTH_TOKEN:
+                    headers["Authorization"] = f"Bearer {NODE_AUTH_TOKEN}"
+                resp = requests.get(f"{CONTROL_PLANE_URL}/nodes/{self.agent.node_id}/wallet", headers=headers)
                 if resp.status_code == 200:
                     data = resp.json()
                     balance = data.get("withdrawable_balance", 0.0) + data.get("pending_rewards", 0.0)

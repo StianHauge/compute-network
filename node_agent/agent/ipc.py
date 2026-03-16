@@ -1,5 +1,9 @@
 import os
-import torch
+try:
+    import torch
+    HAS_TORCH = True
+except ImportError:
+    HAS_TORCH = False
 import logging
 import threading
 from multiprocessing.connection import Listener, Client
@@ -22,10 +26,11 @@ class IPCProvider:
         self.listener = Listener(IPC_SOCKET_PATH, family='AF_UNIX')
         logger.info(f"IPC Provider listening for Superposition requests on {IPC_SOCKET_PATH}")
 
-    def register_tensor(self, name: str, tensor: torch.Tensor):
+    def register_tensor(self, name: str, tensor: 'torch.Tensor'):
         # share_memory_() transitions CPU tensors to shared memory FDs, 
         # and prepares CUDA tensors for CUDA IPC handled generation.
-        tensor.share_memory_()
+        if HAS_TORCH:
+            tensor.share_memory_()
         self.tensors[name] = tensor
         logger.info(f"Registered shared tensor '{name}' for Inference Superposition.")
 

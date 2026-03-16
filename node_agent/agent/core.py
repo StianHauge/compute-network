@@ -7,7 +7,11 @@ import asyncio
 import websockets
 import json
 import threading
-import torch
+try:
+    import torch
+    HAS_TORCH = True
+except ImportError:
+    HAS_TORCH = False
 
 try:
     import pynvml
@@ -23,7 +27,8 @@ from node_agent.agent.ipc import IPCProvider, IPCConsumer
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("NodeAgent")
 
-CONTROL_PLANE_URL = "http://127.0.0.1:8000"
+CONTROL_PLANE_URL = os.getenv("CONTROL_PLANE_URL", "http://127.0.0.1:8000")
+NODE_AUTH_TOKEN = os.getenv("NODE_AUTH_TOKEN", "")
 
 class HardwareInfo(BaseModel):
     cpu_cores: int
@@ -37,21 +42,24 @@ class HardwareInfo(BaseModel):
 
 class InferenceRuntime:
     def __init__(self):
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        self.device = 'cuda' if HAS_TORCH and torch.cuda.is_available() else 'cpu'
         self.ipc_provider = IPCProvider()
         self.ipc_provider.start()
         
         # 1. Phase 3: Try to Superposition VRAM!
         inherited_weights = IPCConsumer.fetch_shared_tensors()
-        if inherited_weights:
+        if inherited_weights and HAS_TORCH:
             self.model_weights = inherited_weights['mistral-7b']
             logger.info(f"SUPERPOSITION READY! Using existing VRAM allocations on {self.device}. Shape: {self.model_weights.shape}")
         else:
             logger.info(f"COLD BOOT... Allocating 1GB of simulated Mistral-7b weights in {self.device}...")
             # Simulate a 1GB model weight tensor (250 million 32-bit floats)
-            self.model_weights = torch.ones(250000000, dtype=torch.float32, device=self.device)
-            # 2. Tell the daemon we have weights available for subsequent containers
-            self.ipc_provider.register_tensor('mistral-7b', self.model_weights)
+            if HAS_TORCH:
+                self.model_weights = torch.ones(250000000, dtype=torch.float32, device=self.device)
+                # 2. Tell the daemon we have weights available for subsequent containers
+                self.ipc_provider.register_tensor('mistral-7b', self.model_weights)
+            else:
+                self.model_weights = None
 
     def execute(self, model: str, messages: list, max_tokens: int):
         pass
@@ -237,7 +245,11 @@ class NodeAgent:
         payload["address"] = f"127.0.0.1-mock-{os.getpid()}"
         payload["models"] = self.cached_models
         payload["node_type"] = os.getenv("NODE_TYPE", "community")
-        resp = requests.post(f"{CONTROL_PLANE_URL}/nodes/register", json=payload)
+        headers = {}
+        if NODE_AUTH_TOKEN:
+            headers["Authorization"] = f"Bearer {NODE_AUTH_TOKEN}"
+            
+        resp = requests.post(f"{CONTROL_PLANE_URL}/nodes/register", json=payload, headers=headers)
         resp.raise_for_status()
         data = resp.json()
         self.node_id = data["node_id"]
@@ -269,7 +281,11 @@ class NodeAgent:
         if not self.node_id:
             return
         try:
-            resp = requests.post(f"{CONTROL_PLANE_URL}/nodes/jobs/poll", json={"node_id": self.node_id})
+            headers = {}
+            if NODE_AUTH_TOKEN:
+                headers["Authorization"] = f"Bearer {NODE_AUTH_TOKEN}"
+                
+            resp = requests.post(f"{CONTROL_PLANE_URL}/nodes/jobs/poll", json={"node_id": self.node_id}, headers=headers)
             resp.raise_for_status()
             data = resp.json()
             job = data.get("job")
@@ -291,7 +307,11 @@ class NodeAgent:
             
             try:
                 payload = {"node_id": self.node_id, "result_logs": "Preload completed", "tokens_generated": 0, "ttft_ms": 0}
-                requests.post(f"{CONTROL_PLANE_URL}/jobs/{job['id']}/complete", json=payload)
+                headers = {}
+                if NODE_AUTH_TOKEN:
+                    headers["Authorization"] = f"Bearer {NODE_AUTH_TOKEN}"
+                    
+                requests.post(f"{CONTROL_PLANE_URL}/jobs/{job['id']}/complete", json=payload, headers=headers)
             except Exception as e:
                 logger.error(f"Failed to report preload completion: {e}")
             return
@@ -327,7 +347,11 @@ class NodeAgent:
                     ttft_ms = int((time.time() - start_time) * 1000)
                     first_token = False
                     
-                requests.post(f"{CONTROL_PLANE_URL}/jobs/{job['id']}/chunk", json={"node_id": self.node_id, "chunk": chunk})
+                headers = {}
+                if NODE_AUTH_TOKEN:
+                    headers["Authorization"] = f"Bearer {NODE_AUTH_TOKEN}"
+                    
+                requests.post(f"{CONTROL_PLANE_URL}/jobs/{job['id']}/chunk", json={"node_id": self.node_id, "chunk": chunk}, headers=headers)
                 tokens_generated += 1
                 
         except Exception as e:
@@ -343,7 +367,11 @@ class NodeAgent:
                 "tokens_generated": tokens_generated,
                 "ttft_ms": ttft_ms
             }
-            resp = requests.post(f"{CONTROL_PLANE_URL}/jobs/{job['id']}/complete", json=payload)
+            headers = {}
+            if NODE_AUTH_TOKEN:
+                headers["Authorization"] = f"Bearer {NODE_AUTH_TOKEN}"
+                
+            resp = requests.post(f"{CONTROL_PLANE_URL}/jobs/{job['id']}/complete", json=payload, headers=headers)
             resp.raise_for_status()
             logger.info(f"Successfully reported job {job['id']} completion to Control Plane.")
         except Exception as e:
