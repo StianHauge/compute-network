@@ -27,7 +27,7 @@ from node_agent.agent.ipc import IPCProvider, IPCConsumer
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("NodeAgent")
 
-CONTROL_PLANE_URL = os.getenv("CONTROL_PLANE_URL", "http://34.32.243.63")
+CONTROL_PLANE_URL = os.getenv("CONTROL_PLANE_URL", "https://averra.network")
 NODE_AUTH_TOKEN = os.getenv("NODE_AUTH_TOKEN", "averra_dev_secret_override_this")
 
 class HardwareInfo(BaseModel):
