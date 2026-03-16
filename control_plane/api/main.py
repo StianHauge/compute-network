@@ -630,6 +630,22 @@ def complete_job(job_id: str, request: NodeJobCompleteRequest, db: Session = Dep
     job.result_logs = request.result_logs
     job.completed_at = datetime.utcnow()
     
+    if job.task_type == "preload_model":
+        exists = db.query(schema.ModelCache).filter(
+            schema.ModelCache.node_id == request.node_id,
+            schema.ModelCache.model_name == job.model
+        ).first()
+        if not exists:
+            mc = schema.ModelCache(
+                id=str(uuid.uuid4()),
+                node_id=request.node_id,
+                model_name=job.model,
+                quantization="fp16",
+                tensor_parallel_size=1,
+                is_loaded=1
+            )
+            db.add(mc)
+
     if request.ttft_ms is not None:
         job.ttft_ms = request.ttft_ms
         node = db.query(schema.Node).filter(schema.Node.id == request.node_id).first()
