@@ -142,7 +142,9 @@ class LoginRequest(BaseModel):
 
 import os
 import secrets
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
+security = HTTPBearer(auto_error=False)
 NETWORK_SECRET = os.getenv("NETWORK_SECRET", "averra_dev_secret_override_this")
 
 def verify_node_token(auth: HTTPAuthorizationCredentials = Security(security)):
@@ -418,8 +420,6 @@ async def get_live_ledger(db: Session = Depends(get_db)):
         "providers": out_nodes
     }
 
-security = HTTPBearer(auto_error=False)
-
 @app.post("/v1/chat/completions")
 async def chat_completions(
     request: ChatCompletionRequest, 
@@ -479,7 +479,6 @@ async def chat_completions(
         return StreamingResponse(event_generator(), media_type="text/event-stream")
         
     else:
-        # Non-streaming implementation for later...
         return {"error": "Only streaming is supported currently in minimal viable network"}
 
 @app.post("/v1/chat/completions/secure")
