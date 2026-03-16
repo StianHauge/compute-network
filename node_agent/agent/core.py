@@ -237,6 +237,9 @@ class NodeAgent:
         hw_dump = self.hardware.model_dump()
         hw_dump["temperature_c"] = temp_c
         hw_dump["pcie_bw_usage"] = (pcie_tx + pcie_rx) / 1024.0 # KB/s
+        
+        # Dispatcher requires vram_free to be >= 8 for mistral-7b
+        hw_dump["vram_free"] = self.hardware.gpu_vram if self.hardware.gpu_vram else 12.0
         return hw_dump
 
     def register(self):

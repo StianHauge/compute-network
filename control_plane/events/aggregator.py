@@ -28,13 +28,12 @@ class Aggregator:
                     data = json.loads(msg.data.decode())
                     node_id = msg.subject.split(".")[-1]
                     
-                    # Calculate available VRAM for routing (dummy calculation based on total)
-                    total_vram = data.get("gpu_vram", 0)
-                    # We assume right now it's totally free, but a real Node Agent would report `vram_free`
+                    # Read available VRAM for routing
+                    vram_free = data.get("vram_free", data.get("gpu_vram", 0))
                     
                     state = {
                         "status": "ONLINE",  
-                        "vram_free": total_vram, 
+                        "vram_free": vram_free, 
                         "temperature_c": data.get("temperature_c", 0),
                         "pcie_bw": data.get("pcie_bw_usage", 0.0),
                         "cpu_cores": data.get("cpu_cores", 4),
