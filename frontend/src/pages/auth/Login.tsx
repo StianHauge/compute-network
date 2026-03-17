@@ -86,13 +86,13 @@ export default function Login() {
 
           <button type="submit" disabled={isLoading} className="cta-button" style={{ marginTop: '8px', padding: '14px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', width: '100%', opacity: isLoading ? 0.7 : 1, cursor: isLoading ? 'not-allowed' : 'pointer' }}>
             {isLoading ? <Loader2 size={18} className="animate-spin" /> : <LogIn size={18} />}
-            {isLoading ? 'Initializing...' : 'Initialize Session'}
+            {isLoading ? 'Logging in...' : 'Log In'}
           </button>
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '8px' }}>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-            Don't have an account? <Link to="/signup" style={{ color: 'var(--brand-cyan)', textDecoration: 'none' }}>Get an API Key</Link>
+            Don't have an account? <Link to="/signup" style={{ color: 'var(--brand-cyan)', textDecoration: 'none' }}>Sign Up</Link>
           </p>
         </div>
       </div>

@@ -51,8 +51,8 @@ export default function Signup() {
 
       <div className="glass-panel" style={{ padding: '48px', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '24px', zIndex: 1, borderColor: 'rgba(0, 255, 204, 0.15)' }}>
         <div style={{ textAlign: 'center', marginBottom: '12px' }}>
-          <h2 style={{ fontSize: '24px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>Deploy to Averra</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Get your API key and claim your 50k free credits.</p>
+          <h2 style={{ fontSize: '24px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>Create an Account</h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Sign up to get your API key and claim your 50k free credits.</p>
         </div>
         {error && (
           <div style={{ padding: '12px', borderRadius: '6px', background: 'rgba(255,50,50,0.1)', border: '1px solid rgba(255,50,50,0.3)', color: '#ff6b6b', fontSize: '14px', textAlign: 'center' }}>
@@ -89,13 +89,13 @@ export default function Signup() {
 
           <button type="submit" disabled={isLoading} className="cta-button" style={{ marginTop: '8px', padding: '14px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', width: '100%', background: 'linear-gradient(90deg, rgba(0,255,204,0.1) 0%, rgba(180,0,255,0.1) 100%)', borderColor: 'var(--brand-purple)', opacity: isLoading ? 0.7 : 1, cursor: isLoading ? 'not-allowed' : 'pointer' }}>
             {isLoading ? <Loader2 size={18} className="animate-spin" color="var(--brand-cyan)"/> : <UserPlus size={18} color="var(--brand-cyan)"/>}
-            {isLoading ? 'Generating Key...' : 'Generate API Key'}
+            {isLoading ? 'Signing up...' : 'Sign Up'}
           </button>
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '8px' }}>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-            Already have a key? <Link to="/login" style={{ color: 'var(--brand-cyan)', textDecoration: 'none' }}>Initialize Session</Link>
+            Already have an account? <Link to="/login" style={{ color: 'var(--brand-cyan)', textDecoration: 'none' }}>Log In</Link>
           </p>
         </div>
       </div>
