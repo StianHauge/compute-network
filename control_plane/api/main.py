@@ -35,8 +35,12 @@ scheduler = Scheduler()
 auditor = AuditorAgent()
 dispatcher = DispatcherAgent()
 
+import redis.asyncio as aioredis
+import os
+
 # Global memory registry to bridge Node chunk uploads -> Client SSE streams
-job_streams: Dict[str, asyncio.Queue] = {}
+redis_url = os.environ.get("REDIS_URL", "redis://redis:6379/0")
+redis_async_client = aioredis.from_url(redis_url, decode_responses=True)
 _loop = None
 
 @app.on_event("startup")
@@ -526,20 +530,21 @@ async def chat_completions(
     # STREAMING RESPONSE
     # ----------------------------------------
     if request.stream:
-        job_streams[job_id] = asyncio.Queue()
-        
         async def event_generator():
+            pubsub = redis_async_client.pubsub()
+            await pubsub.subscribe(f"job:{job_id}")
             try:
-                while True:
-                    chunk = await job_streams[job_id].get()
-                    if chunk is None or chunk == "[DONE]":
-                        yield "data: [DONE]\n\n"
-                        break
-                    else:
-                        yield f"data: {chunk}\n\n"
+                async for message in pubsub.listen():
+                    if message["type"] == "message":
+                        chunk = message["data"]
+                        if chunk == "[DONE]":
+                            yield "data: [DONE]\n\n"
+                            break
+                        else:
+                            yield f"data: {chunk}\n\n"
             finally:
-                if job_id in job_streams:
-                    del job_streams[job_id]
+                await pubsub.unsubscribe(f"job:{job_id}")
+                await pubsub.close()
                     
         return StreamingResponse(event_generator(), media_type="text/event-stream")
         
@@ -547,31 +552,36 @@ async def chat_completions(
     # NON-STREAMING RESPONSE
     # ----------------------------------------
     else:
-        job_streams[job_id] = asyncio.Queue()
         full_text = ""
+        pubsub = redis_async_client.pubsub()
+        await pubsub.subscribe(f"job:{job_id}")
         
         try:
-            while True:
-                chunk = await asyncio.wait_for(job_streams[job_id].get(), timeout=60.0)
-                if chunk is None or chunk == "[DONE]":
-                    break
-                
-                # Parse the OpenAI delta format from the chunk
-                try:
-                    chunk_data = json.loads(chunk)
-                    delta = chunk_data.get("choices", [{}])[0].get("delta", {}).get("content", "")
-                    full_text += delta
-                except Exception:
-                    # Fallback if raw text was sent
-                    full_text += chunk
+            async def get_messages():
+                full_content = ""
+                async for message in pubsub.listen():
+                    if message["type"] == "message":
+                        chunk = message["data"]
+                        if chunk == "[DONE]":
+                            break
+                        try:
+                            chunk_data = json.loads(chunk)
+                            delta = chunk_data.get("choices", [{}])[0].get("delta", {}).get("content", "")
+                            full_content += delta
+                        except Exception:
+                            # Fallback if raw text was sent
+                            full_content += chunk
+                return full_content
+
+            full_text = await asyncio.wait_for(get_messages(), timeout=60.0)
         except asyncio.TimeoutError:
             # Cleanup on timeout
             db.query(schema.Job).filter(schema.Job.id == job_id).update({"status": schema.JobStatus.FAILED})
             db.commit()
             raise HTTPException(status_code=504, detail="Node timed out generating the response")
         finally:
-            if job_id in job_streams:
-                del job_streams[job_id]
+            await pubsub.unsubscribe(f"job:{job_id}")
+            await pubsub.close()
                 
         return {
             "id": job_id,
@@ -633,20 +643,21 @@ async def secure_chat_completions(
     db.commit()
     
     if request.stream:
-        job_streams[job_id] = asyncio.Queue()
-        
         async def event_generator():
+            pubsub = redis_async_client.pubsub()
+            await pubsub.subscribe(f"job:{job_id}")
             try:
-                while True:
-                    chunk = await job_streams[job_id].get()
-                    if chunk is None or chunk == "[DONE]":
-                        yield "data: [DONE]\n\n"
-                        break
-                    else:
-                        yield f"data: {chunk}\n\n"
+                async for message in pubsub.listen():
+                    if message["type"] == "message":
+                        chunk = message["data"]
+                        if chunk == "[DONE]":
+                            yield "data: [DONE]\n\n"
+                            break
+                        else:
+                            yield f"data: {chunk}\n\n"
             finally:
-                if job_id in job_streams:
-                    del job_streams[job_id]
+                await pubsub.unsubscribe(f"job:{job_id}")
+                await pubsub.close()
                     
         return StreamingResponse(event_generator(), media_type="text/event-stream")
     else:
@@ -657,15 +668,14 @@ class NodeJobChunkRequest(BaseModel):
     chunk: str
 
 @app.post("/jobs/{job_id}/chunk")
-def submit_job_chunk(job_id: str, request: NodeJobChunkRequest, db: Session = Depends(get_db), verified: bool = Depends(verify_node_token)):
-    if job_id in job_streams and _loop is not None:
-        # Format payload as OpenAI discrete chunk
-        payload = json.dumps({
-            "id": job_id,
-            "object": "chat.completion.chunk",
-            "choices": [{"delta": {"content": request.chunk}}]
-        })
-        _loop.call_soon_threadsafe(job_streams[job_id].put_nowait, payload)
+async def submit_job_chunk(job_id: str, request: NodeJobChunkRequest, db: Session = Depends(get_db), verified: bool = Depends(verify_node_token)):
+    # Format payload as OpenAI discrete chunk
+    payload = json.dumps({
+        "id": job_id,
+        "object": "chat.completion.chunk",
+        "choices": [{"delta": {"content": request.chunk}}]
+    })
+    await redis_async_client.publish(f"job:{job_id}", payload)
         
     return {"status": "ok"}
 
@@ -712,7 +722,7 @@ class NodeJobCompleteRequest(BaseModel):
     attestation_receipt: Optional[str] = None # ZKP or Signed DCGM payload
 
 @app.post("/jobs/{job_id}/complete")
-def complete_job(job_id: str, request: NodeJobCompleteRequest, db: Session = Depends(get_db), verified: bool = Depends(verify_node_token)):
+async def complete_job(job_id: str, request: NodeJobCompleteRequest, db: Session = Depends(get_db), verified: bool = Depends(verify_node_token)):
     job = db.query(schema.Job).filter(
         schema.Job.id == job_id,
         schema.Job.node_id == request.node_id,
@@ -768,8 +778,7 @@ def complete_job(job_id: str, request: NodeJobCompleteRequest, db: Session = Dep
     db.commit()
     
     # End SSE Stream
-    if job_id in job_streams and _loop is not None:
-        _loop.call_soon_threadsafe(job_streams[job_id].put_nowait, "[DONE]")
+    await redis_async_client.publish(f"job:{job_id}", "[DONE]")
     
     # Trigger reward calculation here
     from control_plane.reward_engine.calculator import process_job_reward
