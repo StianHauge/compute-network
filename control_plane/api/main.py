@@ -491,6 +491,21 @@ async def chat_completions(
                     raise HTTPException(status_code=402, detail="Insufficient Compute Credits. Mine more on the network!")
                 caller_id = token
 
+    # Dynamic Matchmaking: Find a capable Node
+    capable_nodes = db.query(schema.Node).join(schema.ModelCache).filter(
+        schema.Node.status == schema.NodeStatus.ONLINE,
+        schema.ModelCache.model_name == request.model
+    ).all()
+    
+    if not capable_nodes:
+        raise HTTPException(
+            status_code=503, 
+            detail=f"No active nodes currently hosting model '{request.model}'. Please try again later or request model preloading."
+        )
+        
+    # Pick the first one (for V1, in V2 we'd pick by lowest latency/queue)
+    selected_node = capable_nodes[0]
+
     job_id = str(uuid.uuid4())
     parameters = {"max_tokens": request.max_tokens, "vram_required": 8}
     
@@ -501,11 +516,15 @@ async def chat_completions(
         messages=[m.model_dump() for m in request.messages],
         parameters=parameters,
         status=schema.JobStatus.PENDING,
-        caller_node_id=caller_id
+        caller_node_id=caller_id,
+        node_id=selected_node.id  # Assign the job to this specific node!
     )
     db.add(new_job)
     db.commit()
     
+    # ----------------------------------------
+    # STREAMING RESPONSE
+    # ----------------------------------------
     if request.stream:
         job_streams[job_id] = asyncio.Queue()
         
@@ -524,8 +543,51 @@ async def chat_completions(
                     
         return StreamingResponse(event_generator(), media_type="text/event-stream")
         
+    # ----------------------------------------
+    # NON-STREAMING RESPONSE
+    # ----------------------------------------
     else:
-        return {"error": "Only streaming is supported currently in minimal viable network"}
+        job_streams[job_id] = asyncio.Queue()
+        full_text = ""
+        
+        try:
+            while True:
+                chunk = await asyncio.wait_for(job_streams[job_id].get(), timeout=60.0)
+                if chunk is None or chunk == "[DONE]":
+                    break
+                
+                # Parse the OpenAI delta format from the chunk
+                try:
+                    chunk_data = json.loads(chunk)
+                    delta = chunk_data.get("choices", [{}])[0].get("delta", {}).get("content", "")
+                    full_text += delta
+                except Exception:
+                    # Fallback if raw text was sent
+                    full_text += chunk
+        except asyncio.TimeoutError:
+            # Cleanup on timeout
+            db.query(schema.Job).filter(schema.Job.id == job_id).update({"status": schema.JobStatus.FAILED})
+            db.commit()
+            raise HTTPException(status_code=504, detail="Node timed out generating the response")
+        finally:
+            if job_id in job_streams:
+                del job_streams[job_id]
+                
+        return {
+            "id": job_id,
+            "object": "chat.completion",
+            "model": request.model,
+            "choices": [
+                {
+                    "message": {
+                        "role": "assistant",
+                        "content": full_text
+                    },
+                    "finish_reason": "stop",
+                    "index": 0
+                }
+            ]
+        }
 
 @app.post("/v1/chat/completions/secure")
 async def secure_chat_completions(
