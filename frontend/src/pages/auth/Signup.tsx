@@ -39,17 +39,17 @@ export default function Signup() {
   };
 
   return (
-    <div className="landing-container" style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+    <div className="landing-container fade-in" style={{ backgroundColor: 'var(--bg-base)', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
       
       {/* Background flare */}
-      <div style={{ position: 'absolute', top: '0', right: '0', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(180, 0, 255, 0.05) 0%, rgba(10, 10, 10, 0) 70%)', zIndex: 0, pointerEvents: 'none' }}></div>
+      <div style={{ position: 'absolute', top: '0', right: '0', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(124, 108, 255, 0.05) 0%, rgba(10, 10, 10, 0) 70%)', zIndex: 0, pointerEvents: 'none' }}></div>
 
       <Link to="/" style={{ position: 'absolute', top: '24px', left: '48px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 1 }}>
         <img src={logo} alt="Averra Logo" style={{ width: '24px', height: '24px' }} />
         <span style={{ fontSize: '18px', color: 'var(--text-primary)', fontWeight: '600' }}>Averra</span>
       </Link>
 
-      <div className="glass-panel" style={{ padding: '48px', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '24px', zIndex: 1, borderColor: 'rgba(0, 255, 204, 0.15)' }}>
+      <div className="glass-panel" style={{ padding: '48px', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '24px', zIndex: 1, borderColor: 'rgba(47, 230, 211, 0.15)' }}>
         <div style={{ textAlign: 'center', marginBottom: '12px' }}>
           <h2 style={{ fontSize: '24px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>Create an Account</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Sign up to get your API key and claim your 50k free credits.</p>
@@ -87,15 +87,15 @@ export default function Signup() {
             />
           </div>
 
-          <button type="submit" disabled={isLoading} className="cta-button" style={{ marginTop: '8px', padding: '14px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', width: '100%', background: 'linear-gradient(90deg, rgba(0,255,204,0.1) 0%, rgba(180,0,255,0.1) 100%)', borderColor: 'var(--brand-purple)', opacity: isLoading ? 0.7 : 1, cursor: isLoading ? 'not-allowed' : 'pointer' }}>
-            {isLoading ? <Loader2 size={18} className="animate-spin" color="var(--brand-cyan)"/> : <UserPlus size={18} color="var(--brand-cyan)"/>}
+          <button type="submit" disabled={isLoading} className="cta-button" style={{ marginTop: '8px', padding: '14px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', width: '100%', background: 'linear-gradient(90deg, rgba(47,230,211,0.05) 0%, rgba(124,108,255,0.05) 100%)', borderColor: 'var(--accent-secondary)', opacity: isLoading ? 0.7 : 1, cursor: isLoading ? 'not-allowed' : 'pointer' }}>
+            {isLoading ? <Loader2 size={18} className="animate-spin" color="var(--accent-primary)"/> : <UserPlus size={18} color="var(--accent-primary)"/>}
             {isLoading ? 'Signing up...' : 'Sign Up'}
           </button>
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '8px' }}>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-            Already have an account? <Link to="/login" style={{ color: 'var(--brand-cyan)', textDecoration: 'none' }}>Log In</Link>
+            Already have an account? <Link to="/login" style={{ color: 'var(--accent-primary)', textDecoration: 'none' }}>Log In</Link>
           </p>
         </div>
       </div>

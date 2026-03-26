@@ -31,9 +31,13 @@ def main():
         os.remove("compute_network.db")
     
     # 1. Start Control Plane
-    control_plane_cmd = ["uvicorn", "control_plane.api.main:app", "--host", "127.0.0.1", "--port", str(CONTROL_PLANE_PORT)]
+    env = os.environ.copy()
+    env["REDIS_URL"] = "redis://127.0.0.1:6379/0"
+    env["NATS_URL"] = "nats://127.0.0.1:4222"
+    
+    control_plane_cmd = [sys.executable, "-m", "uvicorn", "control_plane.api.main:app", "--host", "127.0.0.1", "--port", str(CONTROL_PLANE_PORT)]
     print(f"Starting Control Plane: {' '.join(control_plane_cmd)}")
-    cp_proc = subprocess.Popen(control_plane_cmd, stdout=sys.stdout, stderr=sys.stderr)
+    cp_proc = subprocess.Popen(control_plane_cmd, env=env, stdout=sys.stdout, stderr=sys.stderr)
     
     if not wait_for_api():
         print("Failed to start API. Exiting.")
@@ -48,6 +52,9 @@ def main():
         # Since uvicorn in node agent hardcodes 8080 right now, 4 will fail to start dashboard but keep running agent.
         for i in range(5):
             env = os.environ.copy()
+            env["REDIS_URL"] = "redis://127.0.0.1:6379/0"
+            env["NATS_URL"] = "nats://127.0.0.1:4222"
+            
             if i == 0:
                 print("Starting Cloud-Burst Node (8x H100 Cluster)...")
                 env["CLOUD_NODE"] = "1"

@@ -5,7 +5,7 @@ import logo from '../assets/logo.png';
 
 export default function Landing() {
   return (
-    <div className="landing-container" style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column' }}>
+    <div className="landing-container fade-in" style={{ backgroundColor: 'var(--bg-base)', minHeight: '100vh', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column' }}>
       
       {/* Top Navigation */}
       <nav style={{ display: 'flex', justifyContent: 'space-between', padding: '24px 48px', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)' }}>
@@ -24,12 +24,12 @@ export default function Landing() {
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         
         {/* Subtle background pulse effect */}
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(0, 255, 204, 0.05) 0%, rgba(10, 10, 10, 0) 70%)', zIndex: 0, pointerEvents: 'none' }}></div>
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(47, 230, 211, 0.05) 0%, rgba(10, 10, 10, 0) 70%)', zIndex: 0, pointerEvents: 'none' }}></div>
 
         <div style={{ zIndex: 1, maxWidth: '800px' }}>
           <h2 style={{ fontSize: '64px', fontWeight: 800, marginBottom: '24px', lineHeight: 1.1, letterSpacing: '-0.02em' }}>
             Switch from centralized <br />
-            <span style={{ color: 'var(--brand-cyan)', textShadow: '0 0 30px rgba(0,255,204,0.3)' }}>AI inference</span> in two lines of code
+            <span style={{ color: 'var(--accent-primary)', textShadow: '0 0 30px rgba(47,230,211,0.3)' }}>AI inference</span> in two lines of code
           </h2>
           
           <p style={{ fontSize: '20px', color: 'var(--text-secondary)', marginBottom: '48px', lineHeight: 1.6, maxWidth: '600px', margin: '0 auto 48px auto' }}>
@@ -43,7 +43,7 @@ export default function Landing() {
             {/* Developer Card - Top Left */}
             <div className="glass-panel" style={{ padding: '32px', position: 'relative' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-                <Terminal size={20} color="var(--brand-cyan)" />
+                <Terminal size={20} color="var(--accent-primary)" />
                 <h3 style={{ fontSize: '18px', margin: 0 }}>State-Aware Orchestration</h3>
               </div>
               <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px' }}>
@@ -54,54 +54,54 @@ export default function Landing() {
                 <div style={{ color: '#ff6b6b', textDecoration: 'line-through', marginBottom: '8px' }}>
                   base_url = "https://api.openai.com/v1"
                 </div>
-                <div style={{ color: 'var(--brand-cyan)' }}>
+                <div style={{ color: 'var(--accent-primary)' }}>
                   base_url = "https://api.averra.network/v1"
                 </div>
               </div>
             </div>
 
             {/* Provider Card: Linux - Top Right */}
-            <div className="glass-panel" style={{ padding: '32px', borderColor: 'rgba(180, 0, 255, 0.2)', display: 'flex', flexDirection: 'column' }}>
+            <div className="glass-panel" style={{ padding: '32px', borderColor: 'rgba(124, 108, 255, 0.2)', display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-                <Zap size={20} color="var(--brand-purple)" />
+                <Zap size={20} color="var(--accent-secondary)" />
                 <h3 style={{ fontSize: '18px', margin: 0 }}>Tiered Reliability Routing</h3>
               </div>
               <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px', flex: 1 }}>
                 Choose "Best Effort" for cost-savings or "Consensus Routing" with 3x redundancy for enterprise SLAs. OpenAI-compatible drop-in replacement.
               </p>
               
-              <div className="mono" style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '16px', borderRadius: '8px', fontSize: '13px', color: '#e0e0e0', border: '1px solid rgba(180, 0, 255, 0.2)' }}>
-                <span style={{ color: 'var(--brand-purple)' }}>~ </span>
+              <div className="mono" style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: '16px', borderRadius: '8px', fontSize: '13px', color: '#e0e0e0', border: '1px solid rgba(124, 108, 255, 0.2)' }}>
+                <span style={{ color: 'var(--accent-secondary)' }}>~ </span>
                 curl -sSL https://install.averra.network | sh -s -- --token YOUR_KEY
               </div>
             </div>
 
             {/* Provider Card: macOS - Bottom Left */}
-            <div className="glass-panel" style={{ padding: '32px', borderColor: 'rgba(180, 0, 255, 0.2)', display: 'flex', flexDirection: 'column' }}>
+            <div className="glass-panel" style={{ padding: '32px', borderColor: 'rgba(124, 108, 255, 0.2)', display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-                <Zap size={20} color="var(--brand-purple)" />
+                <Zap size={20} color="var(--accent-secondary)" />
                 <h3 style={{ fontSize: '18px', margin: 0 }}>Node Operator: macOS & Linux</h3>
               </div>
               <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px', flex: 1 }}>
                 Provide unified memory inference capacity to the mesh for SLMs/MLMs. Automated payouts and background settlement require zero configuration.
               </p>
               
-              <a href="/downloads/Averra-Node-Installer-v1.0.4.dmg" download className="cta-button" style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--brand-purple)', color: 'var(--text-primary)', padding: '14px 16px', fontSize: '14px', justifyContent: 'center', textDecoration: 'none', display: 'flex' }}>
+              <a href="/downloads/Averra-Node-Installer-v1.0.6.dmg" download className="cta-button" style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)', padding: '14px 16px', fontSize: '14px', justifyContent: 'center', textDecoration: 'none', display: 'flex' }}>
                  Download for macOS (.dmg)
               </a>
             </div>
 
             {/* Provider Card: Windows - Bottom Right */}
-            <div className="glass-panel" style={{ padding: '32px', borderColor: 'rgba(180, 0, 255, 0.2)', display: 'flex', flexDirection: 'column' }}>
+            <div className="glass-panel" style={{ padding: '32px', borderColor: 'rgba(124, 108, 255, 0.2)', display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-                <Zap size={20} color="var(--brand-purple)" />
+                <Zap size={20} color="var(--accent-secondary)" />
                 <h3 style={{ fontSize: '18px', margin: 0 }}>Node Operator: Windows PC</h3>
               </div>
               <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '24px', flex: 1 }}>
                 Connect your NVIDIA GPU with sufficient VRAM headroom. Our scheduler continuously scores node reliability, uptime, and execution quality.
               </p>
               
-              <a href="/downloads/Averra-Node-Installer.exe" download className="cta-button" style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--brand-purple)', color: 'var(--text-primary)', padding: '14px 16px', fontSize: '14px', justifyContent: 'center', textDecoration: 'none', display: 'flex' }}>
+              <a href="/downloads/Averra-Node-Installer.exe" download className="cta-button" style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)', padding: '14px 16px', fontSize: '14px', justifyContent: 'center', textDecoration: 'none', display: 'flex' }}>
                  Download for Windows (.exe)
               </a>
             </div>

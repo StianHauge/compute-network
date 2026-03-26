@@ -39,7 +39,7 @@ export default function Login() {
   };
 
   return (
-    <div className="landing-container" style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+    <div className="landing-container fade-in" style={{ backgroundColor: 'var(--bg-base)', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
       
       <Link to="/" style={{ position: 'absolute', top: '24px', left: '48px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
         <img src={logo} alt="Averra Logo" style={{ width: '24px', height: '24px' }} />
@@ -92,7 +92,7 @@ export default function Login() {
 
         <div style={{ textAlign: 'center', marginTop: '8px' }}>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-            Don't have an account? <Link to="/signup" style={{ color: 'var(--brand-cyan)', textDecoration: 'none' }}>Sign Up</Link>
+            Don't have an account? <Link to="/signup" style={{ color: 'var(--accent-primary)', textDecoration: 'none' }}>Sign Up</Link>
           </p>
         </div>
       </div>

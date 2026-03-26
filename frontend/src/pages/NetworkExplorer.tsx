@@ -56,7 +56,7 @@ function NetworkExplorer() {
   }, []);
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container fade-in">
       {/* Header */}
       <header className="header">
         <div className="header-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -140,7 +140,7 @@ function NetworkExplorer() {
         <div className="glass-panel">
           <div className="header-title" style={{marginBottom: '16px', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px', justifyContent: 'space-between'}}>
              <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                 <Coins size={20} color="var(--brand-gold)" />
+                 <Coins size={20} color="var(--status-warning)" />
                  <h2 style={{fontSize: '16px', color: 'var(--text-primary)'}}>Provider Node Incomes ($AVR)</h2>
              </div>
              <div title="Protected by Automated Quality Control">
@@ -161,7 +161,7 @@ function NetworkExplorer() {
                   <tr key={i}>
                     <td className="mono" style={{color: 'var(--text-secondary)'}}>{p.id}</td>
                     <td className="mono" style={{textAlign: 'right', color: 'var(--text-secondary)'}}>{p.staked.toLocaleString()}</td>
-                    <td className="mono" style={{textAlign: 'right', color: 'var(--brand-gold)', fontWeight: 700}}>
+                    <td className="mono" style={{textAlign: 'right', color: 'var(--status-warning)', fontWeight: 700}}>
                         +{p.earned_avr.toFixed(4)}
                     </td>
                   </tr>
@@ -205,7 +205,7 @@ function NetworkExplorer() {
                               </td>
                               <td className="mono">{n.vram_free.toFixed(1)} GB</td>
                               <td className="mono">{n.temperature_c.toFixed(1)} °C</td>
-                              <td className="mono" style={{color: 'var(--brand-gold)'}}>{n.earned_avr.toFixed(4)}</td>
+                              <td className="mono" style={{color: 'var(--status-warning)'}}>{n.earned_avr.toFixed(4)}</td>
                           </tr>
                       ))}
                   </tbody>

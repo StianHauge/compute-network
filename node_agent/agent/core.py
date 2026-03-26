@@ -277,7 +277,8 @@ class NodeAgent:
     def register(self):
         logger.info("Registering with Control Plane...")
         payload = self.hardware.model_dump()
-        payload["address"] = f"127.0.0.1-mock-{os.getpid()}"
+        import uuid
+        payload["address"] = f"127.0.0.1-mock-{os.getpid()}-{str(uuid.uuid4())[:8]}"
         payload["models"] = self.cached_models
         payload["node_type"] = os.getenv("NODE_TYPE", "community")
         if self.node_link_key:

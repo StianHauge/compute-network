@@ -36,7 +36,7 @@ export default function Dashboard() {
     return () => clearInterval(intervalId);
   }, [navigate]);
 
-  if (isLoading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-main)', color: 'white' }}><div className="animate-spin"><Server /></div></div>;
+  if (isLoading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-base)', color: 'white' }}><div className="animate-spin"><Server /></div></div>;
 
   const totalEarned = dashboardData?.nodes?.reduce((acc: number, n: any) => acc + n.earned, 0) || 0;
 
@@ -61,28 +61,28 @@ export default function Dashboard() {
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         
         {/* Sidebar Navigation */}
-        <aside style={{ width: '250px', borderRight: '1px solid var(--border-subtle)', padding: '24px 0', display: 'flex', flexDirection: 'column', gap: '8px', backgroundColor: 'rgba(10,10,10,0.5)' }}>
+        <aside style={{ width: '250px', borderRight: '1px solid var(--border-subtle)', padding: '24px 0', display: 'flex', flexDirection: 'column', gap: '8px', backgroundColor: 'var(--bg-surface)' }}>
           <button 
             onClick={() => setActiveTab('developer')}
-            style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 24px', background: activeTab === 'developer' ? 'rgba(0, 255, 204, 0.1)' : 'transparent', borderLeft: activeTab === 'developer' ? '3px solid var(--brand-cyan)' : '3px solid transparent', color: activeTab === 'developer' ? 'var(--text-primary)' : 'var(--text-secondary)', transition: 'all 0.2s', width: '100%', textAlign: 'left', borderTop: 'none', borderRight: 'none', borderBottom: 'none', cursor: 'pointer' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 24px', background: activeTab === 'developer' ? 'rgba(47, 230, 211, 0.05)' : 'transparent', borderLeft: activeTab === 'developer' ? '3px solid var(--accent-primary)' : '3px solid transparent', color: activeTab === 'developer' ? 'var(--text-primary)' : 'var(--text-secondary)', transition: 'all 0.2s', width: '100%', textAlign: 'left', borderTop: 'none', borderRight: 'none', borderBottom: 'none', cursor: 'pointer' }}
           >
-            <TerminalSquare size={18} color={activeTab === 'developer' ? 'var(--brand-cyan)' : 'var(--text-secondary)'} />
+            <TerminalSquare size={18} color={activeTab === 'developer' ? 'var(--accent-primary)' : 'var(--text-secondary)'} />
             The Developer Nexus
           </button>
           
           <button 
             onClick={() => setActiveTab('infrastructure')}
-            style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 24px', background: activeTab === 'infrastructure' ? 'rgba(0, 255, 204, 0.1)' : 'transparent', borderLeft: activeTab === 'infrastructure' ? '3px solid var(--brand-cyan)' : '3px solid transparent', color: activeTab === 'infrastructure' ? 'var(--text-primary)' : 'var(--text-secondary)', transition: 'all 0.2s', width: '100%', textAlign: 'left', borderTop: 'none', borderRight: 'none', borderBottom: 'none', cursor: 'pointer' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 24px', background: activeTab === 'infrastructure' ? 'rgba(47, 230, 211, 0.05)' : 'transparent', borderLeft: activeTab === 'infrastructure' ? '3px solid var(--accent-primary)' : '3px solid transparent', color: activeTab === 'infrastructure' ? 'var(--text-primary)' : 'var(--text-secondary)', transition: 'all 0.2s', width: '100%', textAlign: 'left', borderTop: 'none', borderRight: 'none', borderBottom: 'none', cursor: 'pointer' }}
           >
-            <Server size={18} color={activeTab === 'infrastructure' ? 'var(--brand-cyan)' : 'var(--text-secondary)'} />
+            <Server size={18} color={activeTab === 'infrastructure' ? 'var(--accent-primary)' : 'var(--text-secondary)'} />
             Infrastructure Grid
           </button>
           
           <button 
             onClick={() => setActiveTab('vault')}
-            style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 24px', background: activeTab === 'vault' ? 'rgba(180, 0, 255, 0.1)' : 'transparent', borderLeft: activeTab === 'vault' ? '3px solid var(--brand-purple)' : '3px solid transparent', color: activeTab === 'vault' ? 'var(--text-primary)' : 'var(--text-secondary)', transition: 'all 0.2s', width: '100%', textAlign: 'left', borderTop: 'none', borderRight: 'none', borderBottom: 'none', cursor: 'pointer' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 24px', background: activeTab === 'vault' ? 'rgba(124, 108, 255, 0.08)' : 'transparent', borderLeft: activeTab === 'vault' ? '3px solid var(--accent-secondary)' : '3px solid transparent', color: activeTab === 'vault' ? 'var(--text-primary)' : 'var(--text-secondary)', transition: 'all 0.2s', width: '100%', textAlign: 'left', borderTop: 'none', borderRight: 'none', borderBottom: 'none', cursor: 'pointer' }}
           >
-            <ShieldAlert size={18} color={activeTab === 'vault' ? 'var(--brand-purple)' : 'var(--text-secondary)'} />
+            <ShieldAlert size={18} color={activeTab === 'vault' ? 'var(--accent-secondary)' : 'var(--text-secondary)'} />
             The Staking Vault
           </button>
         </aside>
@@ -123,10 +123,10 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="glass-panel" style={{ padding: '24px', gridColumn: 'span 2' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: 'var(--brand-purple)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: 'var(--accent-secondary)' }}>
                     <HardDrive size={16} /> Node Link Key
                   </div>
-                  <div className="mono" style={{ backgroundColor: 'rgba(180, 0, 255, 0.1)', padding: '16px', borderRadius: '6px', fontSize: '14px', border: '1px solid rgba(180, 0, 255, 0.3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', color: 'white' }}>
+                  <div className="mono" style={{ backgroundColor: 'rgba(124, 108, 255, 0.1)', padding: '16px', borderRadius: '6px', fontSize: '14px', border: '1px solid rgba(124, 108, 255, 0.3)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', color: 'white' }}>
                     <span>{dashboardData?.node_link_key}</span>
                     <Copy size={16} style={{ cursor: 'pointer', color: 'white' }} onClick={() => navigator.clipboard.writeText(dashboardData?.node_link_key)} />
                   </div>
@@ -150,23 +150,23 @@ export default function Dashboard() {
             <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '32px', maxWidth: '1000px', margin: '0 auto' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
-                  <h2 style={{ fontSize: '24px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px' }}><Server size={24} color="var(--brand-cyan)"/> Infrastructure Grid</h2>
+                  <h2 style={{ fontSize: '24px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px' }}><Server size={24} color="var(--accent-primary)"/> Infrastructure Grid</h2>
                   <p style={{ color: 'var(--text-secondary)' }}>Monitor your active hardware fleet and earnings.</p>
                 </div>
                 <div className="glass-panel" style={{ padding: '12px 24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
                    <div style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>TOTAL EARNED</div>
-                   <div style={{ color: 'var(--brand-gold)', fontSize: '24px', fontWeight: 'bold' }}>{totalEarned.toFixed(3)} <span style={{fontSize: '14px'}}>$AVR</span></div>
+                   <div style={{ color: 'var(--status-warning)', fontSize: '24px', fontWeight: 'bold' }}>{totalEarned.toFixed(3)} <span style={{fontSize: '14px'}}>$AVR</span></div>
                 </div>
               </div>
 
               <div className="glass-panel" style={{ padding: '2px', overflow: 'hidden', position: 'relative', height: '300px' }}>
                 {/* Mock Map Background */}
-                <div style={{ width: '100%', height: '100%', background: 'radial-gradient(circle at center, rgba(0, 255, 204, 0.05) 0%, rgba(0, 0, 0, 1) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--border-subtle)', fontSize: '12px', letterSpacing: '4px' }}>
+                <div style={{ width: '100%', height: '100%', background: 'radial-gradient(circle at center, rgba(47, 230, 211, 0.05) 0%, rgba(11, 16, 32, 1) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--border-subtle)', fontSize: '12px', letterSpacing: '4px' }}>
                   GLOBAL ROUTING MAP
                 </div>
                 {/* Mock Pips */}
-                <div style={{ position: 'absolute', top: '40%', left: '55%', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--brand-cyan)', boxShadow: '0 0 10px var(--brand-cyan)' }}></div>
-                <div style={{ position: 'absolute', top: '35%', left: '48%', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--brand-purple)', boxShadow: '0 0 10px var(--brand-purple)' }}></div>
+                <div style={{ position: 'absolute', top: '40%', left: '55%', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--accent-primary)', boxShadow: '0 0 10px var(--accent-primary)' }}></div>
+                <div style={{ position: 'absolute', top: '35%', left: '48%', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--accent-secondary)', boxShadow: '0 0 10px var(--accent-secondary)' }}></div>
                 <div style={{ position: 'absolute', top: '50%', left: '20%', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ff4444', boxShadow: '0 0 10px #ff4444' }}></div>
               </div>
 
@@ -217,18 +217,17 @@ export default function Dashboard() {
           )}
 
           {/* TAB 3: THE STAKING VAULT */}
-          {activeTab === 'vault' && (
-            <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '32px', maxWidth: '800px', margin: '0 auto' }}>
+          {activeTab === 'vault' && (             <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '32px', maxWidth: '800px', margin: '0 auto' }}>
                <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-                  <ShieldAlert size={48} color="var(--brand-purple)" style={{ marginBottom: '16px' }} />
+                  <ShieldAlert size={48} color="var(--accent-secondary)" style={{ marginBottom: '16px' }} />
                   <h2 style={{ fontSize: '32px', marginBottom: '8px' }}>The Staking Vault</h2>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '16px' }}>Lock $AVR to increase your TPL $S_bonus$ multiplier and secure the network.</p>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '16px' }}>Lock $AVR to increase your TPL multiplier and secure the network.</p>
                </div>
 
-               <div className="glass-panel" style={{ padding: '48px', borderColor: 'rgba(180, 0, 255, 0.2)' }}>
+               <div className="glass-panel" style={{ padding: '48px', borderColor: 'rgba(124, 108, 255, 0.2)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
                     <span style={{ color: 'var(--text-secondary)' }}>Currently Staked</span>
-                    <span className="mono" style={{ fontSize: '24px', color: 'var(--brand-gold)', fontWeight: 'bold' }}>{stakedAvr.toLocaleString()} $AVR</span>
+                    <span className="mono" style={{ fontSize: '24px', color: 'var(--status-warning)', fontWeight: 'bold' }}>{stakedAvr.toLocaleString()} $AVR</span>
                   </div>
 
                   <input 
@@ -238,25 +237,25 @@ export default function Dashboard() {
                     step="1000" 
                     value={stakedAvr} 
                     onChange={(e) => setStakedAvr(Number(e.target.value))}
-                    style={{ width: '100%', marginBottom: '32px', accentColor: 'var(--brand-purple)' }}
+                    style={{ width: '100%', marginBottom: '32px', accentColor: 'var(--accent-secondary)' }}
                   />
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px', backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px', backgroundColor: 'var(--bg-panel)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
                     <div>
                       <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Current Routing Tier</div>
-                      <div style={{ color: stakedAvr >= 50000 ? 'var(--brand-cyan)' : 'var(--text-primary)', fontWeight: 'bold' }}>
+                      <div style={{ color: stakedAvr >= 50000 ? 'var(--accent-primary)' : 'var(--text-primary)', fontWeight: 'bold' }}>
                         {stakedAvr >= 50000 ? 'Enterprise Routing (Tier 1)' : 'Standard Routing (Tier 2)'}
                       </div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>TPL Multiplier</div>
-                      <div className="mono" style={{ color: 'var(--brand-purple)', fontWeight: 'bold' }}>
+                      <div className="mono" style={{ color: 'var(--accent-secondary)', fontWeight: 'bold' }}>
                         x{(1.0 + (stakedAvr / 100000)).toFixed(2)}
                       </div>
                     </div>
                   </div>
 
-                  <button className="cta-button" style={{ width: '100%', marginTop: '24px', background: 'linear-gradient(90deg, rgba(180,0,255,0.2) 0%, transparent 100%)', borderColor: 'var(--brand-purple)' }}>
+                  <button className="cta-button" style={{ width: '100%', marginTop: '24px', background: 'linear-gradient(90deg, rgba(124,108,255,0.1) 0%, transparent 100%)', borderColor: 'var(--accent-secondary)' }}>
                     Commit Stake
                   </button>
                </div>
