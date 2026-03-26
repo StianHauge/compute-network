@@ -86,7 +86,7 @@ export default function Landing() {
                 Provide unified memory inference capacity to the mesh for SLMs/MLMs. Automated payouts and background settlement require zero configuration.
               </p>
               
-              <a href="/downloads/Averra-Node-Installer-v1.0.3.dmg" download className="cta-button" style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--brand-purple)', color: 'var(--text-primary)', padding: '14px 16px', fontSize: '14px', justifyContent: 'center', textDecoration: 'none', display: 'flex' }}>
+              <a href="/downloads/Averra-Node-Installer-v1.0.4.dmg" download className="cta-button" style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'var(--brand-purple)', color: 'var(--text-primary)', padding: '14px 16px', fontSize: '14px', justifyContent: 'center', textDecoration: 'none', display: 'flex' }}>
                  Download for macOS (.dmg)
               </a>
             </div>

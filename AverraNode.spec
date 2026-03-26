@@ -17,7 +17,7 @@ datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 a = Analysis(
-    ['/Users/stianhauge/.gemini/antigravity/scratch/compute-network/node_agent/mac_app.py'],
+    ['/Users/stianhauge/Desktop/Averra/node_agent/mac_app.py'],
     pathex=[],
     binaries=binaries,
     datas=datas,
