@@ -74,6 +74,16 @@ class RedisStateGrid:
         result = self.reserve_script(keys=[key], args=[required_vram_gb])
         return result == 1
         
+    def get_node_status(self, node_id: str) -> str:
+        """Fetches the exact real-time status of a node."""
+        if not self.client: return "OFFLINE"
+        return self.client.hget(f"node:{node_id}", "status") or "OFFLINE"
+
+    def release_node_capacity(self, node_id: str, released_vram_gb: int):
+        """Returns VRAM to pool on completion or failure."""
+        if not self.client: return
+        self.client.hincrby(f"node:{node_id}", "vram_free", int(released_vram_gb))
+        
     def get_all_routable_nodes(self):
         """Fetches all keys quickly. In production, we'd use Redis Search (RediSearch) for Geo-Spatial & numeric filtering."""
         if not self.client: return []

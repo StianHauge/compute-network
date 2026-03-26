@@ -98,6 +98,6 @@ class WatchdogAgent:
         job.node_id = None
         
         # 3. Notify the user via SSE that a failover is happening
-        redis_store.redis.publish(f"job:{job.id}", '{"status": "Node connection lost. Rerouting to a new node..."}')
+        redis_store.client.publish(f"job:{job.id}", '{"status": "Node connection lost. Rerouting to a new node..."}')
         
         db.commit()
