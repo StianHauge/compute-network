@@ -15,6 +15,9 @@ class NodeType(enum.Enum):
 
 class JobStatus(enum.Enum):
     PENDING = "PENDING"
+    QUEUED = "QUEUED"
+    AWAITING_CAPACITY = "AWAITING_CAPACITY"
+    PRELOADING = "PRELOADING"
     RUNNING = "RUNNING"
     COMPLETED = "COMPLETED"
     FAILED = "FAILED"

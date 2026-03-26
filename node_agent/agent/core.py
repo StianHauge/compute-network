@@ -297,9 +297,16 @@ class NodeAgent:
         ws_url = CONTROL_PLANE_URL.replace("http://", "ws://").replace("https://", "wss://")
         uri = f"{ws_url}/ws/telemetry/{self.node_id}"
         
+        # Bypasses SSL verification errors when connecting to localhost or invalid certs
+        import ssl
+        ssl_context = ssl.create_default_context()
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
+        
         while self.is_running:
             try:
-                async with websockets.connect(uri) as websocket:
+                # Use the unverified SSL context for local simulation testing
+                async with websockets.connect(uri, ssl=ssl_context if ws_url.startswith("wss://") else None) as websocket:
                     logger.info("Connected to Control Plane Telemetry WebSocket.")
                     while self.is_running:
                         payload = self._get_live_telemetry()

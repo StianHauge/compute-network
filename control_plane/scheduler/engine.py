@@ -33,8 +33,8 @@ class Scheduler:
     def _schedule_jobs(self):
         db = schema.SessionLocal()
         try:
-            # 1. Get all pending jobs
-            pending_jobs = db.query(schema.Job).filter(schema.Job.status == schema.JobStatus.PENDING).all()
+            # 1. Get all queued jobs
+            pending_jobs = db.query(schema.Job).filter(schema.Job.status == schema.JobStatus.QUEUED).all()
             if not pending_jobs:
                 return
 
@@ -66,24 +66,47 @@ class Scheduler:
                 # Drop required VRAM to 1GB to support simulated Intel Mac Nodes taking jobs
                 req_vram = reqs.get("vram_required", 1)
 
-                # Find best node with TPL mathematics
+                # Find best node with TPL mathematics that ALREADY has the model loaded
                 assigned_node = self._find_best_node(job, online_nodes, req_vram)
                 if assigned_node:
                     # Phase 4.1: CAS Reservation in Redis to prevent Double-Booking!
                     if redis_store.reserve_node_capacity(assigned_node.id, req_vram):
-                        logger.info(f"Assigned job {job.id} to node {assigned_node.id}. TPL win!")
+                        logger.info(f"Assigned job {job.id} to nod e {assigned_node.id}. (Hot Start)")
                         job.node_id = assigned_node.id
-                        # DO NOT mark as RUNNING here immediately, let the Node poll it and mark it.
+                        # Signal the user via SSE that generation is starting
+                        redis_store.redis.publish(f"job:{job.id}", '{"status": "Model loaded. Generating..."}')
                         db.commit()
                     else:
-                         logger.warning(f"Race condition averted! Node {assigned_node.id} lost capacity just before booking.")
+                         logger.warning(f"Race condition averted! Node {assigned_node.id} lost capacity.")
                 else:
-                    logger.info(f"Could not find capable node for job {job.id}")
+                    # FALLBACK: Cold Start (Model Preloading)
+                    # Find any node with enough VRAM, even if it doesn't have the model loaded
+                    logger.info(f"No Hot Nodes found for {job.id}. Attempting a Cold Start Preload.")
+                    fallback_node = self._find_best_node(job, online_nodes, req_vram, require_model=False)
+                    
+                    if fallback_node:
+                        if redis_store.reserve_node_capacity(fallback_node.id, req_vram):
+                            logger.info(f"Assigning PRELOAD to Node {fallback_node.id}.")
+                            job.node_id = fallback_node.id
+                            job.status = schema.JobStatus.PRELOADING
+                            # Signal the user that we are warming up the model
+                            redis_store.redis.publish(f"job:{job.id}", f'{{"status": "Cold start: Preloading model {job.model} to Node {fallback_node.id}..."}}')
+                            db.commit()
+                            
+                            # In reality, you'd send a NATS message to `node.{id}.preload` here.
+                            # For now, the Node Agent will pick up PRELOADING jobs from its poll.
+                        else:
+                            logger.warning(f"Fallback Node {fallback_node.id} lost capacity.")
+                    else:
+                        logger.warning(f"Network Out of Capacity for job {job.id}. AWAITING_CAPACITY.")
+                        job.status = schema.JobStatus.AWAITING_CAPACITY
+                        redis_store.redis.publish(f"job:{job.id}", '{"status": "Awaiting network capacity..."}')
+                        db.commit()
 
         finally:
             db.close()
 
-    def _find_best_node(self, job: schema.Job, nodes: List[schema.Node], req_vram: int) -> schema.Node:
+    def _find_best_node(self, job: schema.Job, nodes: List[schema.Node], req_vram: int, require_model: bool = True) -> schema.Node:
         reqs = job.parameters or {}
         req_tp = reqs.get("tensor_parallel_size", 1)
         req_quant = reqs.get("quantization", "fp16")
@@ -98,20 +121,21 @@ class Scheduler:
             if (n.gpu_count or 1) < req_tp:
                 continue
                 
-            has_model = False
-            for mc in n.cached_models:
-                if mc.model_name == target_model and mc.quantization == req_quant:
-                    if mc.tensor_parallel_size >= req_tp:
-                        has_model = True
-                        break
-                        
-            if not has_model:
-                continue
+            if require_model:
+                has_model = False
+                for mc in n.cached_models:
+                    if mc.model_name == target_model and mc.quantization == req_quant:
+                        if mc.tensor_parallel_size >= req_tp:
+                            has_model = True
+                            break
+                            
+                if not has_model:
+                    continue
                 
             capable_nodes.append(n)
                 
         if not capable_nodes:
-            logger.info(f"No nodes found with model '{target_model}', TP>={req_tp}, and >= {req_vram}GB VRAM for job {job.id}")
+            # Removed redundant logging here since the loop handles fallback info
             return None
             
         # The TPL (Total Perceived Latency) Formula
