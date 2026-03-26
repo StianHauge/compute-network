@@ -190,7 +190,7 @@ def get_developer_dashboard(dev: schema.Developer = Depends(verify_developer_tok
             "model": n.gpu_model or "CPU",
             "vram": n.gpu_vram or 0.0,
             "location": n.location,
-            "status": state.get("status", n.status.value),
+            "status": state.get("status", "OFFLINE"),
             "temp": 45.0 + (len(n.id) % 30), # mock temp
             "pcie": 16.0,
             "earned": earned
