@@ -32,6 +32,8 @@ export default function Dashboard() {
       }
     };
     fetchData();
+    const intervalId = setInterval(fetchData, 3000);
+    return () => clearInterval(intervalId);
   }, [navigate]);
 
   if (isLoading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-main)', color: 'white' }}><div className="animate-spin"><Server /></div></div>;
