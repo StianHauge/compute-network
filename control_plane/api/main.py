@@ -20,6 +20,7 @@ from control_plane.agents.auditor import AuditorAgent
 from control_plane.agents.dispatcher import DispatcherAgent
 from control_plane.agents.accountant import accountant
 from control_plane.scheduler.engine import Scheduler
+from control_plane.scheduler.watchdog import WatchdogAgent
 
 app = FastAPI(title="Compute Network Control Plane API")
 
@@ -32,6 +33,7 @@ app.add_middleware(
 )
 
 scheduler = Scheduler()
+watchdog = WatchdogAgent()
 auditor = AuditorAgent()
 dispatcher = DispatcherAgent()
 
@@ -39,7 +41,7 @@ import redis.asyncio as aioredis
 import os
 
 # Global memory registry to bridge Node chunk uploads -> Client SSE streams
-redis_url = os.environ.get("REDIS_URL", "redis://redis:6379/0")
+redis_url = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379/0")
 redis_async_client = aioredis.from_url(redis_url, decode_responses=True)
 _loop = None
 
@@ -51,12 +53,14 @@ async def startup_event():
     aggregator.start()
     accountant.start()
     scheduler.start()
+    watchdog.start()
     auditor.start()
     dispatcher.start()
 
 @app.on_event("shutdown")
 def shutdown_event():
     scheduler.stop()
+    watchdog.stop()
     auditor.stop()
     dispatcher.stop()
 
@@ -78,6 +82,14 @@ def verify_password(plain_password, hashed_password):
 
 def get_password_hash(password):
     return pwd_context.hash(password)
+
+def anonymize_email(email: str) -> str:
+    """Returns a privacy-safe display handle, e.g. st***@transisto.com"""
+    try:
+        name, domain = email.split("@", 1)
+        return f"{name[:2]}***@{domain}"
+    except Exception:
+        return "user@***"
 
 # ----------------------------------------------------
 # Pydantic Schemas
@@ -373,16 +385,16 @@ class NodePollRequest(BaseModel):
 
 @app.post("/nodes/jobs/poll")
 def poll_jobs(request: NodePollRequest, db: Session = Depends(get_db), verified: bool = Depends(verify_node_token)):
-    # Find any pending jobs assigned to this node
+    # Find any pending jobs assigned to this node by the Scheduler Engine
     job = db.query(schema.Job).filter(
         schema.Job.node_id == request.node_id,
-        schema.Job.status == schema.JobStatus.PENDING
+        schema.Job.status.in_([schema.JobStatus.QUEUED, schema.JobStatus.PRELOADING])
     ).first()
     
     if not job:
         return {"job": None}
         
-    # Mark it as RUNNING so no one else picks it up or we don't return it again immediately
+    # Mark it as RUNNING so the Watchdog knows the node accepted the assignment
     job.status = schema.JobStatus.RUNNING
     db.commit()
     
@@ -460,7 +472,7 @@ async def nodes_live():
 async def get_live_ledger(db: Session = Depends(get_db)):
     """Returns the actual ledger of developers and nodes from the database."""
     users = db.query(schema.Developer).limit(10).all()
-    out_users = [{"email": u.email, "credits": round(u.compute_credits, 2)} for u in users]
+    out_users = [{"handle": anonymize_email(u.email), "credits": round(u.compute_credits, 2)} for u in users]
         
     top_nodes = db.query(schema.Node).order_by(schema.Node.staked_avr.desc()).limit(10).all()
     out_nodes = [{"id": n.id[:8], "earned_avr": round(n.earned_avr or 0, 4), "staked": round(n.staked_avr or 0, 2)} for n in top_nodes]
@@ -495,21 +507,6 @@ async def chat_completions(
                     raise HTTPException(status_code=402, detail="Insufficient Compute Credits. Mine more on the network!")
                 caller_id = token
 
-    # Dynamic Matchmaking: Find a capable Node
-    capable_nodes = db.query(schema.Node).join(schema.ModelCache).filter(
-        schema.Node.status == schema.NodeStatus.ONLINE,
-        schema.ModelCache.model_name == request.model
-    ).all()
-    
-    if not capable_nodes:
-        raise HTTPException(
-            status_code=503, 
-            detail=f"No active nodes currently hosting model '{request.model}'. Please try again later or request model preloading."
-        )
-        
-    # Pick the first one (for V1, in V2 we'd pick by lowest latency/queue)
-    selected_node = capable_nodes[0]
-
     job_id = str(uuid.uuid4())
     parameters = {"max_tokens": request.max_tokens, "vram_required": 8}
     
@@ -519,9 +516,9 @@ async def chat_completions(
         model=request.model,
         messages=[m.model_dump() for m in request.messages],
         parameters=parameters,
-        status=schema.JobStatus.PENDING,
+        status=schema.JobStatus.QUEUED,
         caller_node_id=caller_id,
-        node_id=selected_node.id  # Assign the job to this specific node!
+        node_id=None  # Scheduler will assign this
     )
     db.add(new_job)
     db.commit()
@@ -636,8 +633,9 @@ async def secure_chat_completions(
         model=request.model,
         messages=secure_messages,
         parameters=parameters,
-        status=schema.JobStatus.PENDING,
-        caller_node_id=caller_id
+        status=schema.JobStatus.QUEUED,
+        caller_node_id=caller_id,
+        node_id=None # Scheduler will assign this
     )
     db.add(new_job)
     db.commit()

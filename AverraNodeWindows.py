@@ -7,6 +7,11 @@ import pystray
 from pystray import MenuItem as item
 import asyncio
 import os
+try:
+    import tkinter as tk
+    from tkinter import simpledialog, messagebox
+except ImportError:
+    tk = None
 
 # Important: ensure project root is in path or run from root
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
@@ -14,9 +19,43 @@ from node_agent.agent.core import NodeAgent
 
 class AverraWindowsApp:
     def __init__(self):
-        self.agent = NodeAgent()
+        link_key = self.get_saved_key()
+        self.agent = NodeAgent(node_link_key=link_key)
         self.agent_thread = None
         self.icon = None
+
+    def get_saved_key(self) -> str:
+        appdata = os.environ.get("APPDATA", os.path.expanduser("~"))
+        key_path = os.path.join(appdata, "averra_node_link_key.txt")
+        if os.path.exists(key_path):
+            with open(key_path, "r") as f:
+                return f.read().strip()
+        return ""
+
+    def save_key(self, key: str):
+        appdata = os.environ.get("APPDATA", os.path.expanduser("~"))
+        key_path = os.path.join(appdata, "averra_node_link_key.txt")
+        with open(key_path, "w") as f:
+            f.write(key.strip())
+
+    def set_node_link_key(self, icon, item_):
+        if not tk:
+            print("tkinter not available")
+            return
+        root = tk.Tk()
+        root.withdraw()
+        current = self.get_saved_key()
+        key = simpledialog.askstring(
+            "Link Your Node",
+            "Enter your Node Link Key from averra.network/dashboard:",
+            initialvalue=current,
+            parent=root
+        )
+        root.destroy()
+        if key and key.strip():
+            self.save_key(key)
+            self.agent.node_link_key = key.strip()
+            messagebox.showinfo("Averra Node", "Node Link Key saved successfully.")
 
     def create_image(self, color1, color2):
         # Generate a simple icon based on two colors
@@ -55,12 +94,8 @@ class AverraWindowsApp:
             icon.notify("Averra Node stopped.", "Averra Network")
             self.update_menu(icon)
 
-    def open_dashboard(self, icon, item):
-        webbrowser.open("http://127.0.0.1:8080")
-
-    def open_network_explorer(self, icon, item):
-        # In MVP, our web portal runs locally on 5173
-        webbrowser.open("http://localhost:5173/explorer")
+    def open_dashboard(self, icon, item_):
+        webbrowser.open("https://averra.network/dashboard")
 
     def exit_app(self, icon, item):
         self.stop_agent(icon, item)
@@ -80,8 +115,8 @@ class AverraWindowsApp:
             item('Start Inference Node', self.start_agent, enabled=not self.agent.is_running),
             item('Stop Inference Node', self.stop_agent, enabled=self.agent.is_running),
             pystray.Menu.SEPARATOR,
-            item('Open Local Dashboard', self.open_dashboard),
-            item('View Network Explorer', self.open_network_explorer),
+            item('Set Node Link Key...', self.set_node_link_key),
+            item('Open Developer Dashboard', self.open_dashboard),
             pystray.Menu.SEPARATOR,
             item('Quit Averra', self.exit_app)
         )

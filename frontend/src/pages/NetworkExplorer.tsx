@@ -23,7 +23,7 @@ interface NodeLive {
 }
 
 interface MockLedger {
-  consumers: { email: string; credits: number }[];
+  consumers: { handle: string; credits: number }[];
   providers: { id: string; earned_avr: number; staked: number }[];
 }
 
@@ -128,7 +128,7 @@ function NetworkExplorer() {
               <tbody>
                 {ledger?.consumers.map((c, i) => (
                   <tr key={i}>
-                    <td className="mono">{c.email}</td>
+                    <td className="mono">{c.handle}</td>
                     <td className="mono" style={{textAlign: 'right', color: '#fff'}}>{c.credits.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits:1})}</td>
                   </tr>
                 ))}

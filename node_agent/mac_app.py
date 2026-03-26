@@ -30,8 +30,12 @@ class AverraNodeApp(rumps.App):
             self.models_menu,
             None,
             rumps.MenuItem(title="Set Node Link Key...", callback=self.set_node_link_key),
-            rumps.MenuItem(title="View Local Dashboard", callback=self.open_dashboard)
+            rumps.MenuItem(title="Open Developer Dashboard", callback=self.open_dashboard)
         ]
+        
+        # First-run onboarding: prompt for node link key if none is saved
+        if not self.get_saved_key():
+            self.set_node_link_key(None)
 
     def get_saved_key(self):
         key_path = os.path.expanduser("~/.averra_node_link_key")
@@ -47,15 +51,23 @@ class AverraNodeApp(rumps.App):
 
     def set_node_link_key(self, sender):
         current_key = self.get_saved_key()
+        is_first_run = sender is None
+        message = (
+            "Welcome to Averra Node!\n\nPaste your Node Link Key from averra.network/dashboard\nto link your hardware to your account."
+            if is_first_run else
+            "Enter your Node Link Key from the Developer Dashboard:"
+        )
         response = rumps.Window(
-            message="Enter your Node Link Key from the Developer Dashboard:",
-            title="Authenticate Node",
+            message=message,
+            title="Authenticate Node" if not is_first_run else "Link Your Node",
             default_text=current_key,
             dimensions=(300, 24)
         ).run()
-        if response.clicked:
+        if response.clicked and response.text.strip():
             self.save_key(response.text)
             rumps.notification(title="Averra Node", subtitle="Key Saved", message="Node Link Key has been updated.")
+        elif is_first_run:
+            rumps.notification(title="Averra Node", subtitle="Running Anonymously", message="No key set. Running as a community node. Use 'Set Node Link Key...' to link later.")
 
     @rumps.timer(5)
     def refresh_stats(self, sender):
@@ -102,7 +114,7 @@ class AverraNodeApp(rumps.App):
             rumps.notification(title="Averra Node", subtitle="Node Stopped", message="Disconnected from the network.")
 
     def open_dashboard(self, _):
-        webbrowser.open("http://127.0.0.1:8080")
+        webbrowser.open("https://averra.network/dashboard")
 
 if __name__ == "__main__":
     app = AverraNodeApp()
